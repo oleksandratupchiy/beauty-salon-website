@@ -1,0 +1,51 @@
+/* Підключаємо Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+* {
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Стиль картки відгуку */
+.review-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-left: 5px solid #ef629f; /* Рожева лінія збоку */
+}
+
+/* Рожеві зірочки */
+.fa-star {
+    color: #ef629f !important; /* Твій яскраво-рожевий */
+    margin-right: 3px;
+    font-size: 1.1em;
+}
+
+/* Імена жирні та скісні (перший рядок тексту) */
+.review-text {
+    white-space: pre-line;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.review-text::first-line {
+    font-weight: 700;   /* Жирний */
+    font-style: italic; /* Скісний */
+    font-size: 1.1em;
+    color: #000;
+}
+
+/* Фікс для іконок, щоб вони не стали текстом */
+.fas, .fa-star {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Beauty Salon | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --pink: #ffafbd;
+            --gradient: linear-gradient(135deg, #eecda3 0%, #ef629f 100%);
+            --soft-blue: #e3f2fd;
+            --soft-pink: #fce4ec;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            background-color: #fafafa;
+        }
+
+        /* NAVIGATION BAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 50px;
+            background: white;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            height: 400px;
+            background: linear-gradient(to right, var(--soft-blue), var(--soft-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* CATEGORIES */
+        .section-title {
+            text-align: center;
+            margin: 50px 0 30px;
+            font-size: 28px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .category-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 50px;
+        }
+
+        .category-card {
+            flex: 1;
+            max-width: 300px;
+            height: 200px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-main {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo"><strong>BEAUTY</strong>SALON</div>
+    <div class="nav-links">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/services}">Services</a>
+        <a th:href="@{/masters}">Masters</a>
+        <a th:href="@{/booking}">Booking</a>
+    </div>
+    <div class="auth-buttons">
+        <button class="btn-main">Profile</button>
+    </div>
+</nav>
+
+<section class="hero">
+    <div>
+        <h1>Відчуй свою красу</h1>
+        <p>Професійний догляд та релакс</p>
+        <a th:href="@{/booking}" class="btn-main">Записатись зараз</a>
+    </div>
+</section>
+
+<h2 class="section-title">Категорії</h2>
+<div class="category-grid">
+    <a th:href="@{/services}" class="category-card">
+        <h3>ПОСЛУГИ</h3>
+    </a>
+    <a th:href="@{/masters}" class="category-card">
+        <h3>МАЙСТРИ</h3>
+    </a>
+    <a th:href="@{/reviews}" class="category-card">
+        <h3>ВІДГУКИ</h3>
+    </a>
+</div>
+
+</body>
+</html>

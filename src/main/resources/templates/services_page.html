@@ -1,0 +1,6 @@
+<div class="category-grid">
+    <div class="category-card" th:each="service : ${services}">
+        <i class="fas fa-magic"></i> <h3 th:text="${service.title}">Назва послуги</h3>
+        <p th:text="${service.price} + ' грн'">Ціна</p> <button class="btn-main">Записатись</button>
+    </div>
+</div>

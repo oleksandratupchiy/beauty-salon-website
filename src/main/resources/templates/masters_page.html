@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Наші Майстри | Beauty Salon</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --pink: #ef629f;
+            --light-gray: #f8f9fa;
+            --gold: #ffc107;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light-gray);
+            margin: 0; padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        /* --- СТИЛЬ КНОПКИ-ФІЛЬТРА --- */
+        .filter-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            background-color: white;
+            color: #333;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid var(--pink);
+            border-radius: 35px;
+            cursor: pointer;
+            min-width: 280px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(239, 98, 159, 0.1);
+            transition: 0.3s;
+        }
+
+        .dropbtn:hover {
+            background-color: #fff5f8;
+            transform: translateY(-2px);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 280px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-radius: 20px;
+            margin-top: 10px;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-content a {
+            color: #555;
+            padding: 14px 20px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #f9f9f9;
+            transition: 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--pink);
+            color: white;
+        }
+
+        .show { display: block; }
+
+        /* --- КАРТКИ --- */
+        .masters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .master-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        .master-card:hover { transform: translateY(-10px); }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            color: #ccc;
+            border: 3px solid #fce4ec;
+        }
+
+        .rating-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff9e6;
+            padding: 4px 12px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+        }
+
+        .rating-box i { color: var(--gold); font-size: 13px; }
+        .rating-box span { font-weight: 700; color: #555; font-size: 14px; }
+
+        .master-card h3 { margin: 10px 0 5px; font-size: 20px; }
+
+        .spec-label {
+            color: var(--pink);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .btn-book {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn-book:hover { background: var(--pink); }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Наші спеціалісти</h1>
+
+    <div class="filter-section">
+        <div class="dropdown">
+            <button class="dropbtn" onclick="toggleDropdown()">
+                <span>
+                    <i class="fas fa-th-large" style="margin-right: 10px; color: var(--pink);"></i>
+                    <th:block th:switch="${activeSpecialization}">
+                        <span th:case="'nails'">Манікюр & Педикюр</span>
+                        <span th:case="'female_cut'">Жіночі стрижки</span>
+                        <span th:case="'male_cut'">Чоловічі стрижки</span>
+                        <span th:case="'makeup'">Візажисти</span>
+                        <span th:case="'permanent'">Перманентний макіяж</span>
+                        <span th:case="'cosmetician'">Косметологи</span>
+                        <span th:case="'lash_brows'">Брови & Вії</span>
+                        <span th:case="'colorist'">Колористи</span>
+                        <span th:case="*">Всі майстри</span>
+                    </th:block>
+                </span>
+                <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 15px;"></i>
+            </button>
+            <div id="myDropdown" class="dropdown-content">
+                <a th:href="@{/masters(specialization='')}">Всі майстри</a>
+                <a th:href="@{/masters(specialization='nails')}">Манікюр & Педикюр</a>
+                <a th:href="@{/masters(specialization='female_cut')}">Жіночі стрижки</a>
+                <a th:href="@{/masters(specialization='male_cut')}">Чоловічі стрижки</a>
+                <a th:href="@{/masters(specialization='makeup')}">Візажисти</a>
+                <a th:href="@{/masters(specialization='permanent')}">Перманентний макіяж</a>
+                <a th:href="@{/masters(specialization='cosmetician')}">Косметологи</a>
+                <a th:href="@{/masters(specialization='lash_brows')}">Брови & Вії</a>
+                <a th:href="@{/masters(specialization='colorist')}">Колористи</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="masters-grid">
+        <div th:each="master : ${masters}" class="master-card">
+            <div class="avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+
+            <div class="rating-box">
+                <i class="fas fa-star"></i>
+                <span th:text="${master.rating != null ? master.rating : '5.0'}">5.0</span>
+            </div>
+
+            <h3 th:text="${master.name}">Ім'я</h3>
+
+            <span class="spec-label" th:switch="${master.specialization}">
+                <span th:case="'nails'">Манікюр & Педикюр</span>
+                <span th:case="'female_cut'">Жіночі стрижки</span>
+                <span th:case="'male_cut'">Чоловічі стрижки</span>
+                <span th:case="'makeup'">Візажист</span>
+                <span th:case="'permanent'">Перманентний макіяж</span>
+                <span th:case="'cosmetician'">Косметолог</span>
+                <span th:case="'lash_brows'">Брови та вії</span>
+                <span th:case="'colorist'">Колорист</span>
+                <span th:case="*" th:text="${master.specialization}">Спеціаліст</span>
+            </span>
+
+            <button class="btn-book">Записатись</button>
+        </div>
+
+        <div th:if="${masters.isEmpty()}" class="empty-state">
+            <i class="fas fa-users-slash" style="font-size: 40px; margin-bottom: 15px;"></i>
+            <p>Майстрів у цій категорії поки не знайдено.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Відкриття/Закриття списку */
+    function toggleDropdown() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    /* Закриття при кліку мимо кнопки */
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn') && !event.target.closest('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

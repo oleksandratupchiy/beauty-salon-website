@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Відгуки | Beauty Salon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --soft-pink: #fce4ec;
+            --main-pink: #ef629f;
+            --soft-blue: #e3f2fd;
+            --bright-pink: #ff1493; /* Твій улюблений яскраво-рожевий */
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--soft-blue) 0%, var(--soft-pink) 100%);
+            margin: 0; min-height: 100vh; padding: 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; text-transform: uppercase; }
+
+        .add-review-section { text-align: center; margin-bottom: 50px; }
+        .add-review-btn {
+            background: #333; color: white; padding: 15px 40px; border: none;
+            border-radius: 30px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s;
+        }
+        .add-review-btn:hover { background: var(--main-pink); transform: scale(1.05); }
+
+        .form-container {
+            background: white; padding: 30px; border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); display: none;
+            margin: 20px auto; text-align: left;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%; padding: 12px; margin-bottom: 10px;
+            border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
+            outline: none; font-family: 'Montserrat', sans-serif;
+        }
+
+        /* РОЖЕВІ ЗІРКИ ПРИ ВИБОРІ */
+        .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 15px; }
+        .rating-input input { display: none; }
+        .rating-input label { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
+        .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--bright-pink); }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.95); padding: 25px;
+            border-radius: 20px; margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .stars { color: var(--bright-pink); } /* РОЖЕВІ ЗІРКИ У КАРТЦІ */
+        .date-label { font-size: 0.8em; color: #999; }
+
+        .info-tags { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag {
+            font-size: 0.75em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tag-master { background: #eee; color: #555; }
+        .tag-service { background: var(--soft-pink); color: var(--main-pink); }
+
+        .review-text { color: #444; line-height: 1.6; white-space: pre-line; font-size: 1.05em; }
+        .review-text::first-line { font-weight: 700; font-style: italic; color: #000; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1> Відгуки клієнтів </h1>
+
+    <div class="add-review-section">
+        <button class="add-review-btn" onclick="toggleForm()"> ЛИШИТИ ВІДГУК </button>
+
+        <div id="reviewForm" class="form-container">
+            <form th:action="@{/reviews/add}" method="post">
+                <input type="text" name="clientName" placeholder="Ваше ім'я" required>
+
+                <div class="form-grid">
+                    <select name="serviceType" id="serviceSelect" onchange="filterMasters()" required>
+                        <option value="" disabled selected>Оберіть послугу</option>
+                        <option value="nails">Манікюр & Педикюр</option>
+                        <option value="female_cut">Жіночі стрижки</option>
+                        <option value="male_cut">Чоловічі стрижки</option>
+                        <option value="makeup">Візаж</option>
+                        <option value="permanent">Перманент</option>
+                        <option value="cosmetician">Косметологія</option>
+                        <option value="lash_brows">Брови & Вії</option>
+                        <option value="colorist">Колористика</option>
+                    </select>
+
+                    <select name="masterName" id="masterSelect" required disabled>
+                        <option value="" disabled selected>Спочатку послуга</option>
+                        <option th:each="m : ${masters}"
+                                th:value="${m.name}"
+                                th:text="${m.name}"
+                                th:attr="data-spec=${m.specialization}"
+                                class="master-option">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="rating-input">
+                    <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+                </div>
+
+                <textarea name="text" rows="4" placeholder="Ваші враження..." required></textarea>
+
+                <button type="submit" style="width: 100%; background: var(--main-pink); color: white; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">
+                    ОПУБЛІКУВАТИ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="reviews-feed">
+        <div class="review-card" th:each="review : ${reviews}">
+            <div class="review-header">
+                <div class="stars">
+                    <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, review.rating.intValue())}"></i>
+                    <i class="far fa-star" th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(1, 5 - review.rating.intValue())}"></i>
+                </div>
+                <span class="date-label" th:text="${#temporals.format(review.createdAt, 'dd.MM.yyyy')}"></span>
+            </div>
+
+            <div class="info-tags">
+                <span class="tag tag-master" th:text="'Майстер: ' + ${review.masterName}"></span>
+
+                <span class="tag tag-service" th:switch="${review.serviceType}">
+                    <span th:case="'nails'">Манікюр & Педикюр</span>
+                    <span th:case="'female_cut'">Жіночі стрижки</span>
+                    <span th:case="'male_cut'">Чоловічі стрижки</span>
+                    <span th:case="'makeup'">Візаж</span>
+                    <span th:case="'permanent'">Перманент</span>
+                    <span th:case="'cosmetician'">Косметологія</span>
+                    <span th:case="'lash_brows'">Брови & Вії</span>
+                    <span th:case="'colorist'">Колористика</span>
+                    <span th:case="*" th:text="${review.serviceType}"></span>
+                </span>
+            </div>
+
+            <div class="review-text" th:text="${review.text}"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForm() {
+        const form = document.getElementById('reviewForm');
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function filterMasters() {
+        const service = document.getElementById('serviceSelect').value;
+        const masterSelect = document.getElementById('masterSelect');
+        const options = masterSelect.querySelectorAll('.master-option');
+
+        masterSelect.disabled = false;
+        masterSelect.innerHTML = '<option value="" disabled selected>Оберіть майстра</option>';
+
+        options.forEach(opt => {
+            if (opt.getAttribute('data-spec') === service) {
+                const newOpt = opt.cloneNode(true);
+                masterSelect.appendChild(newOpt);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
