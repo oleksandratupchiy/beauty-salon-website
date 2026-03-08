@@ -49,6 +49,27 @@ public class ReviewController {
         review.setText(clientName + "\n" + text);
         reviewRepository.save(review);
 
+//далі динамічне оновлення рейтингу майстра на основі відгуків
+        Master master = masterRepository.findAll().stream()
+                .filter(m -> m.getName().equals(masterName))
+                .findFirst()
+                .orElse(null);
+        if(master!=null){
+            List<Review> masterReviews=reviewRepository.findAll().stream()
+                    .filter(r -> r.getMasterName().equals(masterName))
+                    .toList();
+
+            double average = masterReviews.stream()
+                    .mapToDouble(Review::getRating)
+                    .average()
+                    .orElse(5.0);
+
+            double roundedRating = Math.round(average * 10.0) / 10.0;
+
+            master.setRating(roundedRating);
+            masterRepository.save(master);
+        }
+
         return "redirect:/reviews";
     }
 }

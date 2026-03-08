@@ -13,7 +13,7 @@
             --soft-pink: #fce4ec;
             --main-pink: #ef629f;
             --soft-blue: #e3f2fd;
-            --bright-pink: #ff1493; /* Твій улюблений яскраво-рожевий */
+            --bright-pink: #ff1493;
         }
 
         body {
@@ -52,7 +52,6 @@
             outline: none; font-family: 'Montserrat', sans-serif;
         }
 
-        /* РОЖЕВІ ЗІРКИ ПРИ ВИБОРІ */
         .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 15px; }
         .rating-input input { display: none; }
         .rating-input label { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
@@ -65,7 +64,7 @@
         }
 
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .stars { color: var(--bright-pink); } /* РОЖЕВІ ЗІРКИ У КАРТЦІ */
+        .stars { color: var(--bright-pink); }
         .date-label { font-size: 0.8em; color: #999; }
 
         .info-tags { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -113,8 +112,7 @@
                         <option th:each="m : ${masters}"
                                 th:value="${m.name}"
                                 th:text="${m.name}"
-                                th:attr="data-spec=${m.specialization}"
-                                class="master-option">
+                                th:attr="data-spec=${m.specialization}">
                         </option>
                     </select>
                 </div>
@@ -174,19 +172,23 @@
     }
 
     function filterMasters() {
-        const service = document.getElementById('serviceSelect').value;
+        const selectedService = document.getElementById('serviceSelect').value;
         const masterSelect = document.getElementById('masterSelect');
-        const options = masterSelect.querySelectorAll('.master-option');
+        const allOptions = masterSelect.options;
 
         masterSelect.disabled = false;
-        masterSelect.innerHTML = '<option value="" disabled selected>Оберіть майстра</option>';
+        masterSelect.selectedIndex = 0;
 
-        options.forEach(opt => {
-            if (opt.getAttribute('data-spec') === service) {
-                const newOpt = opt.cloneNode(true);
-                masterSelect.appendChild(newOpt);
+        for (let i = 1; i < allOptions.length; i++) {
+            const spec = allOptions[i].getAttribute('data-spec');
+            if (spec === selectedService) {
+                allOptions[i].style.display = "block";
+                allOptions[i].disabled = false;
+            } else {
+                allOptions[i].style.display = "none";
+                allOptions[i].disabled = true;
             }
-        });
+        }
     }
 </script>
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Реєстрація | Beauty Salon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Стилі такі ж, як у логіна */
+        body { font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #e3f2fd 0%, #fce4ec 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        h2 { text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; outline: none; }
+        .btn-auth { width: 100%; background: #333; color: white; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        .btn-auth:hover { background: #ff1493; }
+        .switch-text { margin-top: 20px; font-size: 0.85em; color: #777; }
+        .switch-text a { color: #ff1493; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="auth-card">
+    <h2>Реєстрація</h2>
+    <form th:action="@{/register}" method="post">
+        <input type="text" name="name" placeholder="Ваше ім'я" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit" class="btn-auth">СТВОРИТИ АККАУНТ</button>
+    </form>
+    <div class="switch-text">
+        Вже маєте аккаунт? <a th:href="@{/login}">Увійти</a>
+    </div>
+</div>
+</body>
+</html>

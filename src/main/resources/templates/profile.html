@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мій Профіль | Beauty Salon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bright-pink: #ff1493;
+            --soft-pink: #fce4ec;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            margin: 0; padding: 20px; color: #333;
+        }
+
+        .profile-container {
+            max-width: 800px; margin: 40px auto;
+            background: white; padding: 40px; border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        }
+
+        .profile-header {
+            display: flex; align-items: center; gap: 20px;
+            margin-bottom: 40px; border-bottom: 2px solid var(--soft-pink);
+            padding-bottom: 20px;
+        }
+
+        .avatar-circle {
+            width: 70px; height: 70px; background: var(--bright-pink);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 2rem; font-weight: 700;
+        }
+
+        .appointment-card {
+            background: #fff; border: 1px solid #eee; border-radius: 20px;
+            padding: 20px; margin-bottom: 15px; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+
+        .btn-logout {
+            background: #f8f9fa; color: #666; border: 1px solid #ddd;
+            padding: 12px 25px; border-radius: 12px; cursor: pointer;
+            font-weight: 600; transition: 0.3s; width: 100%;
+        }
+
+        .btn-logout:hover {
+            background: #ffebee; color: #d32f2f; border-color: #d32f2f;
+        }
+
+        .btn-cancel {
+            background: #fff; color: #ff4d4d; border: 1px solid #ff4d4d;
+            padding: 8px 15px; border-radius: 10px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/}" style="text-decoration: none; color: var(--bright-pink); font-weight: 600;">
+            <i class="fas fa-arrow-left"></i> На головну
+        </a>
+    </div>
+
+    <div class="profile-header">
+        <div class="avatar-circle" th:text="${#strings.substring(client.name,0,1)}">К</div>
+        <div>
+            <h2 th:text="${client.name}">Клієнт</h2>
+            <p style="color: #888; margin: 0;" th:text="${client.email}">email@example.com</p>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom: 20px; color: #555;">Мої записи</h3>
+
+    <div th:if="${#lists.isEmpty(appointments)}" style="text-align: center; color: #999; padding: 30px;">
+        Записів поки немає.
+    </div>
+
+    <div class="appointment-card" th:each="app : ${appointments}">
+        <div class="app-info">
+            <p><b><i class="fas fa-check-circle" style="color: var(--bright-pink);"></i> Послуга:</b> <span th:text="${app.service.title}"></span></p>
+            <p><b><i class="far fa-calendar-alt"></i> Дата:</b> <span th:text="${app.date}"></span> о <span th:text="${app.time}"></span></p>
+            <p><b><i class="fas fa-user-tag"></i> Майстер:</b> <span th:text="${app.master.name}"></span></p>
+        </div>
+
+        <form th:action="@{/appointment/cancel}" method="post">
+            <input type="hidden" name="appointmentId" th:value="${app.id}">
+            <button type="submit" class="btn-cancel" onclick="return confirm('Ви впевнені, що хочете скасувати візит?')">
+                Скасувати
+            </button>
+        </form>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
+
+    <form id="logoutForm" th:action="@{/logout}" method="post">
+        <button type="button" class="btn-logout" onclick="askBeforeLogout()">
+            <i class="fas fa-sign-out-alt"></i> ВИЙТИ З АККАУНТУ
+        </button>
+    </form>
+</div>
+
+<script>
+    function askBeforeLogout() {
+        if (confirm("Саш, ти точно хочеш вийти з системи?")) {
+            document.getElementById('logoutForm').submit();
+        }
+    }
+</script>
+
+</body>
+</html>

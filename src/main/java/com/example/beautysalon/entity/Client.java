@@ -14,9 +14,14 @@ public class Client {
 
     private String name;
     private String phone;
+
+    @Column(unique = true, nullable = false)
     private String email;
 
-    // Зв'язок з записами (один клієнт може мати багато записів)
+    // Нові поля для безпеки
+    private String password;
+    private String role; // Тут буде "ROLE_USER"
+
     @OneToMany(mappedBy = "client")
     private List<Appointment> appointments;
 }

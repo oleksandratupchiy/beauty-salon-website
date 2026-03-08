@@ -4,12 +4,12 @@ import com.example.beautysalon.entity.Service;
 import com.example.beautysalon.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model; // Цей імпорт дуже важливий для Model!
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List; // Для списку майстрів
+import java.util.List;
 
-@Controller // Тепер він знову шукатиме HTML
+@Controller
 public class ServiceController {
 
     @Autowired
@@ -17,8 +17,9 @@ public class ServiceController {
 
     @GetMapping("/services")
     public String showServices(Model model) {
-        List<Service> services = serviceRepository.findAll();
-        model.addAttribute("services", services);
+        List<Service> allServices = serviceRepository.findAll();
+        model.addAttribute("services", allServices);
+
         return "services_page";
     }
 }

@@ -2,7 +2,6 @@ package com.example.beautysalon.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "appointment")
@@ -12,7 +11,8 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dateTime;
+    private String date; // Тепер контролер побачить setDate()
+    private String time; // Тепер контролер побачить setTime()
 
     @ManyToOne
     @JoinColumn(name = "master_id")

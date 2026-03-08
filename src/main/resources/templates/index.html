@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Beauty Salon | Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -11,93 +12,58 @@
             --gradient: linear-gradient(135deg, #eecda3 0%, #ef629f 100%);
             --soft-blue: #e3f2fd;
             --soft-pink: #fce4ec;
+            --dark-pink: #ff1493;
         }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            background-color: #fafafa;
-        }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background-color: #fafafa; color: #333; }
 
-        /* NAVIGATION BAR */
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 50px;
-            background: white;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; padding: 20px 50px;
+            background: white; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
         }
 
         .nav-links a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 14px;
+            margin: 0 15px; text-decoration: none; color: #333;
+            font-weight: 500; text-transform: uppercase; font-size: 14px; transition: 0.3s;
         }
 
-        /* HERO SECTION */
+        .nav-links a:hover { color: var(--dark-pink); }
+
         .hero {
-            height: 400px;
-            background: linear-gradient(to right, var(--soft-blue), var(--soft-pink));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            height: 450px; background: linear-gradient(to right, var(--soft-blue), var(--soft-pink));
+            display: flex; align-items: center; justify-content: center; text-align: center;
         }
 
-        /* CATEGORIES */
+        .hero h1 { font-size: 3.5rem; margin-bottom: 10px; font-weight: 700; color: #222; }
+
         .section-title {
-            text-align: center;
-            margin: 50px 0 30px;
-            font-size: 28px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            text-align: center; margin: 60px 0 40px; font-size: 28px;
+            letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
         }
 
-        .category-grid {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 0 50px;
-        }
+        .category-grid { display: flex; justify-content: center; gap: 25px; padding: 0 50px 80px; }
 
         .category-card {
-            flex: 1;
-            max-width: 300px;
-            height: 200px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 15px;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: 0.3s;
-            border: 1px solid #eee;
+            flex: 1; max-width: 300px; height: 220px; background: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 20px; text-decoration: none; color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s; border: 1px solid #f0f0f0;
         }
 
-        .category-card:hover {
-            transform: translateY(-10px);
-            background: var(--gradient);
-            color: white;
-        }
+        .category-card i { font-size: 35px; margin-bottom: 20px; color: var(--dark-pink); }
+        .category-card:hover { transform: translateY(-12px); background: var(--gradient); color: white; }
+        .category-card:hover i { color: white; }
 
         .btn-main {
-            padding: 12px 25px;
-            border-radius: 25px;
-            border: none;
-            background: #333;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            padding: 12px 35px; border-radius: 30px; border: none; background: #333;
+            color: white; cursor: pointer; transition: 0.3s; text-decoration: none;
+            display: inline-block; font-weight: 600; text-transform: uppercase; font-size: 13px;
         }
+
+        .btn-main:hover { background: var(--dark-pink); transform: scale(1.05); }
+        .user-greeting { font-size: 14px; margin-right: 15px; font-weight: 600; color: var(--dark-pink); }
+        footer { text-align: center; padding: 50px; background: white; border-top: 1px solid #eee; font-size: 14px; color: #999; }
     </style>
 </head>
 <body>
@@ -108,33 +74,51 @@
         <a th:href="@{/}">Home</a>
         <a th:href="@{/services}">Services</a>
         <a th:href="@{/masters}">Masters</a>
-        <a th:href="@{/booking}">Booking</a>
+        <a th:href="@{/reviews}">Reviews</a>
+        <a th:href="@{/appointment}">Booking</a>
     </div>
+
     <div class="auth-buttons">
-        <button class="btn-main">Profile</button>
+        <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn-main">Вхід / Реєстрація</a>
+
+        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center;">
+            <span class="user-greeting">
+                <i class="fas fa-user-circle"></i> Привіт, <span sec:authentication="name"></span>!
+            </span>
+            <a th:href="@{/profile}" class="btn-main" style="background: var(--dark-pink);">Мій Профіль</a>
+        </div>
     </div>
 </nav>
 
 <section class="hero">
     <div>
         <h1>Відчуй свою красу</h1>
-        <p>Професійний догляд та релакс</p>
-        <a th:href="@{/booking}" class="btn-main">Записатись зараз</a>
+        <p style="font-size: 1.2rem; color: #555; margin-bottom: 30px;">Професійний догляд та релакс у самому серці Києва</p>
+        <a th:href="@{/appointment}" class="btn-main" style="padding: 15px 45px; font-size: 15px;">Записатись зараз</a>
     </div>
 </section>
 
-<h2 class="section-title">Категорії</h2>
+<h2 class="section-title">Наші можливості</h2>
 <div class="category-grid">
     <a th:href="@{/services}" class="category-card">
+        <i class="fas fa-spa"></i>
         <h3>ПОСЛУГИ</h3>
     </a>
+
     <a th:href="@{/masters}" class="category-card">
+        <i class="fas fa-user-sparkles"></i>
         <h3>МАЙСТРИ</h3>
     </a>
+
     <a th:href="@{/reviews}" class="category-card">
+        <i class="fas fa-comment-dots"></i>
         <h3>ВІДГУКИ</h3>
     </a>
 </div>
+
+<footer>
+    <p>&copy; 2026 Beauty Salon. м. Київ</p>
+</footer>
 
 </body>
 </html>
