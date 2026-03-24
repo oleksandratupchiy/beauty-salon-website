@@ -2,8 +2,9 @@ package com.example.beautysalon.repository;
 
 import com.example.beautysalon.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    Client findByEmail(String email);
-    Client findByName(String name); // Додай цей рядок обов'язково
+    Optional<Client> findByEmail(String email);
+    Optional<Client> findByName(String name);
 }

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Ваш відгук | Beauty Salon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    :root {
+      --soft-pink: #fce4ec;
+      --main-pink: #ef629f;
+      --soft-blue: #e3f2fd;
+      --bright-pink: #ff1493;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, var(--soft-blue) 0%, var(--soft-pink) 100%);
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .form-container {
+      background: white; padding: 40px; border-radius: 30px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 { font-size: 1.5rem; color: #333; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    p { color: #777; font-size: 0.9rem; margin-bottom: 25px; }
+
+    .info-preview {
+      background: #f8f9fa; padding: 15px; border-radius: 15px;
+      text-align: left; margin-bottom: 25px; border-left: 4px solid var(--bright-pink);
+    }
+
+    .info-preview div { font-size: 0.85rem; margin: 3px 0; color: #555; }
+    .info-preview b { color: #333; }
+
+    textarea {
+      width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 15px;
+      outline: none; font-family: 'Montserrat', sans-serif; box-sizing: border-box;
+      resize: none; margin-bottom: 20px; transition: 0.3s;
+    }
+    textarea:focus { border-color: var(--main-pink); box-shadow: 0 0 10px rgba(239, 98, 159, 0.1); }
+
+    /* Зірочки як у тебе */
+    .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 20px; }
+    .rating-input input { display: none; }
+    .rating-input label { font-size: 40px; color: #ddd; cursor: pointer; transition: 0.2s; padding: 0 5px; }
+    .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--bright-pink); }
+
+    .submit-btn {
+      width: 100%; background: var(--main-pink); color: white; padding: 16px;
+      border: none; border-radius: 15px; font-weight: 700; cursor: pointer;
+      transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .submit-btn:hover { background: var(--bright-pink); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3); }
+
+    .back-link { display: inline-block; margin-top: 20px; color: #999; text-decoration: none; font-size: 0.8rem; font-weight: 600; }
+    .back-link:hover { color: var(--main-pink); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="form-container">
+    <h1>Твій відгук</h1>
+    <p>Поділися враженнями від візиту</p>
+
+    <div class="info-preview">
+      <div><b>Послуга:</b> <span th:text="${app.service.title}"></span></div>
+      <div><b>Майстер:</b> <span th:text="${app.master.name}"></span></div>
+      <div><b>Дата:</b> <span th:text="${app.date}"></span></div>
+    </div>
+
+    <form th:action="@{/reviews/add}" method="post">
+      <input type="hidden" name="appointmentId" th:value="${app.id}">
+      <input type="hidden" name="clientName" th:value="${app.client.name}">
+      <input type="hidden" name="masterName" th:value="${app.master.name}">
+      <input type="hidden" name="serviceType" th:value="${app.service.title}">
+
+      <div class="rating-input">
+        <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
+        <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+        <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+        <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+        <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+      </div>
+
+      <textarea name="text" rows="5" placeholder="Що тобі сподобалося найбільше?" required></textarea>
+
+      <button type="submit" class="submit-btn">Опублікувати</button>
+    </form>
+
+    <a th:href="@{/profile}" class="back-link">
+      <i class="fas fa-times"></i> СКАСУВАТИ
+    </a>
+  </div>
+</div>
+
+</body>
+</html>

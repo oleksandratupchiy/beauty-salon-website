@@ -117,6 +117,8 @@
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.03);
             transition: 0.3s;
+            display: flex; /* Додано для вирівнювання кнопки */
+            flex-direction: column;
         }
 
         .master-card:hover { transform: translateY(-10px); }
@@ -138,11 +140,13 @@
         .rating-box {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 5px;
             background: #fff9e6;
             padding: 4px 12px;
             border-radius: 15px;
             margin-bottom: 12px;
+            align-self: center;
         }
 
         .rating-box i { color: var(--gold); font-size: 13px; }
@@ -157,21 +161,27 @@
             text-transform: uppercase;
             margin-bottom: 20px;
             display: block;
+            flex-grow: 1; /* Змушує кнопку завжди бути внизу картки */
         }
 
+        /* --- КНОПКА ЗАПИСАТИСЬ --- */
         .btn-book {
             background: #333;
             color: white;
-            border: none;
+            text-decoration: none; /* Щоб виглядало як кнопка, а не посилання */
             padding: 12px 25px;
             border-radius: 25px;
-            cursor: pointer;
             font-weight: 600;
+            display: block; /* Займає всю ширину */
             width: 100%;
+            box-sizing: border-box;
             transition: 0.3s;
         }
 
-        .btn-book:hover { background: var(--pink); }
+        .btn-book:hover {
+            background: var(--pink);
+            color: white;
+        }
 
         .empty-state {
             grid-column: 1 / -1;
@@ -184,6 +194,12 @@
 <body>
 
 <div class="container">
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/}" style="text-decoration: none; color: var(--pink); font-weight: 600;">
+            <i class="fas fa-arrow-left"></i> На головну
+        </a>
+    </div>
+
     <h1>Наші спеціалісти</h1>
 
     <div class="filter-section">
@@ -244,7 +260,7 @@
                 <span th:case="*" th:text="${master.specialization}">Спеціаліст</span>
             </span>
 
-            <button class="btn-book">Записатись</button>
+            <a th:href="@{/appointment(masterId=${master.id})}" class="btn-book">Записатись</a>
         </div>
 
         <div th:if="${masters.isEmpty()}" class="empty-state">

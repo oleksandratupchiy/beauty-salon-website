@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Порт даних | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --pink: #ef629f; --dark: #333; --bg: #f8f9fa; --text-muted: #858796; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; display: flex; }
+
+        /* Sidebar Styles */
+        .sidebar { width: 260px; height: 100vh; background: var(--dark); color: white; padding: 25px; position: fixed; box-sizing: border-box; display: flex; flex-direction: column; }
+        .sidebar-header { margin-bottom: 40px; padding-left: 15px; }
+        .sidebar h2 { color: var(--pink); font-size: 1.4rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar-menu { flex-grow: 1; }
+        .sidebar a { display: flex; align-items: center; color: #bbb; text-decoration: none; padding: 15px; border-radius: 10px; transition: 0.3s; margin-bottom: 5px; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(239, 98, 159, 0.1); color: var(--pink); }
+        .sidebar i { margin-right: 15px; width: 20px; text-align: center; font-size: 1.1rem; }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #444; padding-top: 15px; }
+
+        /* Main Content */
+        .main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; }
+        .header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0; }
+        .header h1 { margin: 0; font-size: 1.75rem; color: var(--dark); }
+
+        /* Card Design */
+        .port-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 700px; }
+        .section { margin-bottom: 35px; padding-bottom: 25px; border-bottom: 1px dashed #eee; }
+        .section:last-child { border-bottom: none; }
+
+        .section h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+        /* Form & Buttons */
+        .file-input-wrapper { margin: 20px 0; }
+        input[type="file"] { background: #f1f3f9; padding: 15px; border-radius: 10px; width: 100%; box-sizing: border-box; border: 2px dashed #d1d3e2; cursor: pointer; }
+
+        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-export { background: #4e73df; color: white; box-shadow: 0 4px 6px rgba(78, 115, 223, 0.2); }
+        .btn-import { background: #1cc88a; color: white; box-shadow: 0 4px 6px rgba(28, 200, 138, 0.2); }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Errors & Success Alerts */
+        .alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>Beauty Admin</h2>
+    </div>
+    <div class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}"><i class="fas fa-chart-line"></i> Аналітика</a>
+        <a th:href="@{/admin/masters}"><i class="fas fa-user-tie"></i> Майстри</a>
+        <a th:href="@{/admin/services}"><i class="fas fa-spa"></i> Послуги</a>
+        <a th:href="@{/admin/appointments}"><i class="fas fa-calendar-check"></i> Записи</a>
+        <a th:href="@{/admin/port}" class="active"><i class="fas fa-file-import"></i> Порт даних</a>
+    </div>
+    <div class="sidebar-footer">
+        <a th:href="@{/logout}" style="color: #e74a3b;"><i class="fas fa-sign-out-alt"></i> Вихід</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="header">
+        <h1>Керування даними (Excel)</h1>
+    </div>
+
+    <div th:if="${param.error}" class="alert alert-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:if="${param.error[0] == 'empty'}">Файл порожній. Виберіть коректний файл Excel.</span>
+        <span th:if="${param.error[0] == 'parse'}">Помилка читання файлу. Перевірте формат таблиці.</span>
+    </div>
+
+    <div class="port-card">
+        <div class="section">
+            <h3><i class="fas fa-download" style="color: #4e73df;"></i> Експорт даних</h3>
+            <p>Отримайте звіт у форматі Excel із записами на <strong>поточний місяць</strong>. Це дозволяє швидко переглянути активність та роздрукувати графік.</p>
+            <a th:href="@{/admin/port/export}" class="btn btn-export">
+                <i class="fas fa-file-excel"></i> Скачати поточний звіт
+            </a>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-upload" style="color: #1cc88a;"></i> Імпорт даних</h3>
+            <p>Ви можете масово додати нові записи, завантаживши Excel файл. Переконайтеся, що назви листів збігаються з назвами послуг у базі.</p>
+
+            <form th:action="@{/admin/port/import}" method="post" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <input type="file" name="file" accept=".xlsx" required>
+                </div>
+                <button type="submit" class="btn btn-import">
+                    <i class="fas fa-check-circle"></i> Розпочати імпорт
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

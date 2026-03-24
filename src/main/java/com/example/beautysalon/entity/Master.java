@@ -2,11 +2,13 @@ package com.example.beautysalon.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
 @Table(name = "masters")
 @Data
+@NoArgsConstructor
 public class Master {
 
     @Id
@@ -16,10 +18,6 @@ public class Master {
     private String specialization;
     private Double rating;
 
-    public Double getRating() { return rating; }
-    public void setRating(Double rating) { this.rating = rating; }
-
-
     @ManyToMany
     @JoinTable(
             name = "master_service",
@@ -27,4 +25,10 @@ public class Master {
             inverseJoinColumns = @JoinColumn(name = "service_id"))
     private List<Service> services;
 
+    // Конструктор для імпорту з Excel
+    public Master(String name) {
+        this.name = name;
+        this.rating = 5.0; // Дефолтний рейтинг для нових майстрів
+        this.specialization = "Універсал"; // Дефолтна спеціалізація
+    }
 }

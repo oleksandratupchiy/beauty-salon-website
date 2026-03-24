@@ -20,7 +20,7 @@ public class Client {
 
     // Нові поля для безпеки
     private String password;
-    private String role; // Тут буде "ROLE_USER"
+    private String role = "ROLE_USER";
 
     @OneToMany(mappedBy = "client")
     private List<Appointment> appointments;

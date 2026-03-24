@@ -2,216 +2,391 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Запис до салону | Beauty Salon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         :root {
-            --bright-pink: #ff1493;
-            --soft-pink: #fce4ec;
-            --dark-grey: #333;
+            --primary-pink: #ff1493;
+            --hover-pink: #ff69b4;
+            --light-pink: #fff0f6;
+            --text-dark: #2d3436;
+            --border-color: #dfe6e9;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --warning-color: #f39c12;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #fdfbfb;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0;
+            background: var(--bg-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-dark);
         }
 
         .booking-card {
-            background: white; padding: 40px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(255, 20, 147, 0.1);
-            width: 100%; max-width: 550px; border: 1px solid var(--soft-pink);
+            background: #ffffff;
+            padding: 40px 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 20, 147, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 20, 147, 0.05);
         }
 
-        h2 { font-family: 'Playfair Display', serif; text-align: center; color: var(--dark-grey); font-size: 2rem; margin-bottom: 30px; }
+        h2 {
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-dark);
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--dark-grey); }
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #636e72;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         input, select {
-            width: 100%; padding: 12px 15px; margin-bottom: 20px;
-            border: 1px solid #ddd; border-radius: 12px; font-family: 'Montserrat', sans-serif;
-            box-sizing: border-box; outline: none; transition: 0.3s;
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background-color: #fafafa;
         }
 
-        input:focus, select:focus { border-color: var(--bright-pink); box-shadow: 0 0 8px rgba(255, 20, 147, 0.1); }
+        input:focus, select:focus {
+            border-color: var(--primary-pink);
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.1);
+        }
 
-        .row { display: flex; gap: 15px; }
-        .row div { flex: 1; }
+        input[readonly] {
+            background-color: #f1f2f6;
+            border-color: #f1f2f6;
+            color: #b2bec3;
+            cursor: not-allowed;
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .warning-box {
+            background-color: #fcf3cf;
+            border-left: 5px solid var(--warning-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .warning-box p {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #d35400;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #d35400;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
 
         .submit-btn {
-            width: 100%; background: var(--bright-pink); color: white; border: none;
-            padding: 15px; border-radius: 15px; font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-pink);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             margin-top: 10px;
+            box-shadow: 0 8px 15px rgba(255, 20, 147, 0.2);
         }
-        .submit-btn:hover { background: #d11079; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3); }
 
-        .error-msg { color: #d32f2f; font-size: 0.75rem; margin-top: -15px; margin-bottom: 15px; display: none; }
-        .success-msg { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: 600; }
-        .back-link { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #999; font-size: 0.85rem; }
+        .submit-btn:hover {
+            background: var(--hover-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(255, 20, 147, 0.3);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #b2bec3;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary-pink);
+        }
     </style>
 </head>
 <body>
 
 <div class="booking-card">
-    <h2>Оформлення візиту</h2>
-
-    <div th:if="${param.success}" class="success-msg">
-        <i class="fas fa-check-circle"></i> Ви успішно записані!
-    </div>
+    <h2 th:text="${rescheduleId != null ? 'Перенесення візиту' : 'Запис на візит'}">Запис на візит</h2>
 
     <form th:action="@{/appointment/save}" method="post" onsubmit="return validateForm()">
 
-        <label>Ваше ім'я</label>
-        <input type="text" name="clientName" placeholder="Введіть ваше ім'я" required>
+        <input type="hidden" name="rescheduleId" th:if="${rescheduleId != null}" th:value="${rescheduleId}">
 
-        <label>Номер телефону</label>
-        <input type="tel"
-               name="clientPhone"
-               id="phoneInput"
-               placeholder="+38 (0__) ___-__-__"
-               oninput="formatPhone(this)"
-               onfocus="if(this.value==='') this.value='+38 (0'"
-               required>
-        <div id="phoneError" class="error-msg">Потрібно заповнити номер повністю.</div>
+        <div class="warning-box" th:if="${warning == 'duplicate'}">
+            <p><i class="fas fa-exclamation-triangle"></i> Увага! У вас вже є запис на обраний час (<span th:text="${tempDate}"></span> о <span th:text="${tempTime}"></span>).</p>
+            <label class="checkbox-container">
+                <input type="checkbox" name="forceSave" value="true">
+                Так, я хочу додати ще одну процедуру на цей час
+            </label>
+        </div>
 
-        <label>Оберіть послугу</label>
-        <select name="serviceId" id="serviceSelect" onchange="filterMasters()" required>
-            <option value="" disabled th:selected="${selectedServiceId == null}">-- Оберіть послугу --</option>
-            <option th:each="s : ${services}"
-                    th:value="${s.id}"
-                    th:data-category="${s.category}"
-                    th:text="${s.title + ' — ' + s.price + ' грн'}"
-                    th:selected="${s.id == selectedServiceId}">
-            </option>
-        </select>
+        <div class="form-group">
+            <label>Ваше ім'я</label>
+            <input type="text" th:value="${clientName}" readonly required>
+        </div>
 
-        <label>Оберіть майстра</label>
-        <select name="masterId" id="masterSelect" required>
-            <option value="" id="masterDefaultOption" disabled selected>-- Спочатку оберіть послугу --</option>
-            <option th:each="m : ${masters}"
-                    th:value="${m.id}"
-                    th:data-spec="${m.specialization}"
-                    th:text="${m.name}">
-            </option>
-        </select>
+        <div class="form-group">
+            <label>Номер телефону</label>
+            <input type="tel" id="phoneInput" name="clientPhone"
+                   th:value="${clientPhone}"
+                   placeholder="+38 (0__) ___-__-__" oninput="formatPhone(this)" required>
+        </div>
+
+        <div class="form-group">
+            <label>Послуга</label>
+            <select name="serviceId" id="serviceSelect" onchange="filterMasters(); refreshSlots();" required>
+                <option value="" disabled th:selected="${selectedServiceId == null}">Оберіть процедуру</option>
+                <option th:each="s : ${services}"
+                        th:value="${s.id}"
+                        th:data-category="${s.category}"
+                        th:text="${s.title + ' — ' + s.price + ' грн'}"
+                        th:selected="${s.id == selectedServiceId}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Майстер</label>
+            <select name="masterId" id="masterSelect" onchange="filterServices(); refreshSlots();" required>
+                <option value="" id="masterDefaultOption" disabled th:selected="${selectedMasterId == null}">Оберіть майстра</option>
+                <option th:each="m : ${masters}"
+                        th:value="${m.id}"
+                        th:data-spec="${m.specialization}"
+                        th:text="${m.name}"
+                        th:selected="${m.id == selectedMasterId}"></option>
+            </select>
+        </div>
 
         <div class="row">
-            <div>
-                <label>Дата (Пн-Пт)</label>
-                <input type="date" name="date" id="dateInput" onchange="checkWeekend()" required>
-                <div id="dateError" class="error-msg">Ми не працюємо у вихідні.</div>
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="date" name="date" id="dateInput" th:min="${minDate}" th:max="${maxDate}"
+                       th:value="${tempDate}" onchange="checkWeekend(); refreshSlots();" required>
+                <div id="dateError" class="error-msg">Вихідний день.</div>
             </div>
-            <div>
-                <label>Час візиту</label>
+            <div class="form-group">
+                <label>Час</label>
                 <select name="time" id="timeSelect" required>
-                    <option value="" disabled selected>-- : --</option>
-                    <option value="10:00">10:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="17:00">17:00</option>
+                    <option th:if="${tempTime != null}" th:value="${tempTime}" th:text="${tempTime}" selected></option>
+                    <option th:if="${tempTime == null}" value="" disabled selected>-- : --</option>
                 </select>
             </div>
         </div>
 
-        <button type="submit" class="submit-btn">Забронювати</button>
-        <a href="/services" class="back-link"><i class="fas fa-chevron-left"></i> Назад до послуг</a>
+        <button type="submit" class="submit-btn" th:text="${rescheduleId != null ? 'Зберегти зміни' : 'Забронювати час'}">Забронювати</button>
+
+        <a th:href="@{/profile}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад до профілю
+        </a>
     </form>
 </div>
 
-
-
 <script>
-    // --- 1. ПРАВИЛЬНА МАСКА ТЕЛЕФОНУ ---
     function formatPhone(input) {
-        let matrix = "+38 (0__) ___-__-__";
-        let i = 0;
-        let def = matrix.replace(/\D/g, "");
-        let val = input.value.replace(/\D/g, "");
-
+        let matrix = "+38 (0__) ___-__-__", i = 0, def = matrix.replace(/\D/g, ""), val = input.value.replace(/\D/g, "");
         if (def.length >= val.length) val = def;
-
         input.value = matrix.replace(/./g, function(a) {
             return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a;
         });
+    }
 
-        if (input.value.length < 6) {
-            input.value = "+38 (0";
+    // Якщо клієнт обрав послугу -> фільтруємо майстрів
+    function filterMasters() {
+        const s = document.getElementById('serviceSelect'), m = document.getElementById('masterSelect');
+        const sel = s.options[s.selectedIndex];
+        if (!sel || sel.value === "") return;
+        const cat = sel.getAttribute('data-category');
+
+        let currentMaster = m.value;
+        let firstMatch = null;
+        let matchFound = false;
+
+        Array.from(m.options).forEach(o => {
+            if (o.id === "masterDefaultOption") return;
+            if (o.getAttribute('data-spec') === cat) {
+                o.style.display = "block";
+                if (!firstMatch) firstMatch = o.value;
+                if (o.value === currentMaster) matchFound = true;
+            } else {
+                o.style.display = "none";
+            }
+        });
+
+        if (!matchFound && firstMatch) {
+            m.value = firstMatch;
+        } else if (!matchFound && !firstMatch) {
+            m.value = "";
+        }
+
+        document.getElementById('timeSelect').innerHTML = '<option value="" disabled selected>-- : --</option>';
+    }
+
+    // НОВЕ: Якщо клієнт обрав майстра -> фільтруємо послуги
+    function filterServices() {
+        const s = document.getElementById('serviceSelect'), m = document.getElementById('masterSelect');
+        const sel = m.options[m.selectedIndex];
+        if (!sel || sel.value === "") return;
+        const spec = sel.getAttribute('data-spec');
+
+        let currentService = s.value;
+        let firstMatch = null;
+        let matchFound = false;
+
+        Array.from(s.options).forEach(o => {
+            if (o.value === "") return; // Ігноруємо "Оберіть процедуру"
+            if (o.getAttribute('data-category') === spec) {
+                o.style.display = "block";
+                if (!firstMatch) firstMatch = o.value;
+                if (o.value === currentService) matchFound = true;
+            } else {
+                o.style.display = "none";
+            }
+        });
+
+        // Якщо поточна послуга не підходить, ставимо першу доступну
+        if (!matchFound && firstMatch) {
+            s.value = firstMatch;
+        } else if (!matchFound && !firstMatch) {
+            s.value = "";
+        }
+
+        document.getElementById('timeSelect').innerHTML = '<option value="" disabled selected>-- : --</option>';
+    }
+
+    function refreshSlots() {
+        const mid = document.getElementById('masterSelect').value;
+        const sid = document.getElementById('serviceSelect').value;
+        const date = document.getElementById('dateInput').value;
+        const ts = document.getElementById('timeSelect');
+
+        const tempTime = "[[${tempTime}]]";
+
+        if (mid && sid && date) {
+            ts.innerHTML = '<option disabled selected>Шукаємо вікна...</option>';
+            fetch(`/appointment/available-slots?masterId=${mid}&serviceId=${sid}&date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    ts.innerHTML = '';
+                    if (data.length === 0) {
+                        ts.innerHTML = '<option disabled selected>Вільних місць немає</option>';
+                    } else {
+                        data.forEach(slot => {
+                            let o = document.createElement('option');
+                            o.value = o.text = slot;
+                            if (slot === tempTime) o.selected = true;
+                            ts.appendChild(o);
+                        });
+                    }
+                });
         }
     }
 
-    // --- 2. ФІЛЬТРАЦІЯ МАЙСТРІВ ---
-    function filterMasters() {
-        const serviceSelect = document.getElementById('serviceSelect');
-        const masterSelect = document.getElementById('masterSelect');
-        const defaultOpt = document.getElementById('masterDefaultOption');
-
-        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-        if (!selectedOption || selectedOption.value === "") return;
-
-        const category = selectedOption.getAttribute('data-category');
-
-        // Оновлюємо текст дефолтного пункту
-        defaultOpt.text = "-- Оберіть майстра --";
-        masterSelect.selectedIndex = 0;
-
-        Array.from(masterSelect.options).forEach(option => {
-            if (option.id === "masterDefaultOption") return;
-
-            const masterSpec = option.getAttribute('data-spec');
-            if (masterSpec === category) {
-                option.style.display = "block";
-                option.disabled = false;
-            } else {
-                option.style.display = "none";
-                option.disabled = true;
-            }
-        });
-    }
-
-    // --- 3. ВАЛІДАЦІЯ ТА ВИХІДНІ ---
     function checkWeekend() {
-        const dateInput = document.getElementById('dateInput');
-        const dateError = document.getElementById('dateError');
-        const date = new Date(dateInput.value);
-        const day = date.getUTCDay();
-
-        if (day === 0 || day === 6) {
-            dateError.style.display = "block";
-            dateInput.value = "";
+        const d = new Date(document.getElementById('dateInput').value).getUTCDay();
+        const error = document.getElementById('dateError');
+        if (d === 0 || d === 6) {
+            error.style.display = "block";
+            document.getElementById('dateInput').value = "";
         } else {
-            dateError.style.display = "none";
+            error.style.display = "none";
         }
     }
 
     function validateForm() {
-        const phone = document.getElementById('phoneInput').value;
-        const dateInput = document.getElementById('dateInput').value;
-
-        if (phone.length < 19) {
-            alert("Введіть повний номер телефону: +38 (0XX) XXX-XX-XX");
-            return false;
-        }
-        if (!dateInput) {
-            alert("Будь ласка, оберіть робочий день");
+        if (document.getElementById('phoneInput').value.length < 19) {
+            alert("Будь ласка, заповніть номер телефону повністю.");
             return false;
         }
         return true;
     }
 
-    // --- ПРИ ЗАВАНТАЖЕННІ ---
+    // НОВЕ: Розумне завантаження
     window.onload = function() {
-        // Обмеження дати (не раніше сьогодні)
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateInput').setAttribute('min', today);
+        const sVal = document.getElementById('serviceSelect').value;
+        const mVal = document.getElementById('masterSelect').value;
 
-        // Якщо послуга вже прийшла з прайсу
-        if (document.getElementById('serviceSelect').value !== "") {
+        // Якщо ми прийшли від майстра, спочатку фільтруємо послуги!
+        if (mVal) {
+            filterServices();
+        } else if (sVal) {
             filterMasters();
         }
+
+        if (document.getElementById('dateInput').value) refreshSlots();
     };
 </script>
 </body>

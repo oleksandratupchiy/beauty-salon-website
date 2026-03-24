@@ -14,6 +14,7 @@
             --main-pink: #ef629f;
             --soft-blue: #e3f2fd;
             --bright-pink: #ff1493;
+            --verified-green: #2ecc71; /* ДОДАНО: Колір для підтверджених відгуків */
         }
 
         body {
@@ -23,7 +24,11 @@
         }
 
         .container { max-width: 800px; margin: 0 auto; }
-        h1 { text-align: center; color: #333; margin-bottom: 30px; text-transform: uppercase; }
+
+        .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+        .back-home { text-decoration: none; color: var(--main-pink); font-weight: 600; font-size: 15px; transition: 0.3s; }
+        .back-home:hover { color: var(--bright-pink); transform: translateX(-5px); }
+        h1 { text-align: center; color: #333; margin: 0; text-transform: uppercase; flex-grow: 1; margin-right: 100px; }
 
         .add-review-section { text-align: center; margin-bottom: 50px; }
         .add-review-btn {
@@ -61,13 +66,14 @@
             background: rgba(255, 255, 255, 0.95); padding: 25px;
             border-radius: 20px; margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            position: relative; /* ДОДАНО: Для позиціонування бейджа */
         }
 
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .stars { color: var(--bright-pink); }
         .date-label { font-size: 0.8em; color: #999; }
 
-        .info-tags { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .info-tags { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .tag {
             font-size: 0.75em;
             padding: 4px 10px;
@@ -78,6 +84,21 @@
         .tag-master { background: #eee; color: #555; }
         .tag-service { background: var(--soft-pink); color: var(--main-pink); }
 
+        /* ДОДАНО: Стилі для бейджа підтвердження */
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #e8f8f5;
+            color: var(--verified-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid #c3e6cb;
+        }
+
         .review-text { color: #444; line-height: 1.6; white-space: pre-line; font-size: 1.05em; }
         .review-text::first-line { font-weight: 700; font-style: italic; color: #000; }
     </style>
@@ -85,7 +106,10 @@
 <body>
 
 <div class="container">
-    <h1> Відгуки клієнтів </h1>
+    <div class="header-top">
+        <a th:href="@{/}" class="back-home"><i class="fas fa-arrow-left"></i> На головну</a>
+        <h1> Відгуки клієнтів </h1>
+    </div>
 
     <div class="add-review-section">
         <button class="add-review-btn" onclick="toggleForm()"> ЛИШИТИ ВІДГУК </button>
@@ -138,8 +162,13 @@
         <div class="review-card" th:each="review : ${reviews}">
             <div class="review-header">
                 <div class="stars">
-                    <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, review.rating.intValue())}"></i>
-                    <i class="far fa-star" th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(1, 5 - review.rating.intValue())}"></i>
+                    <th:block th:if="${review.rating != null}">
+                        <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, review.rating.intValue())}"></i>
+                        <i class="far fa-star" th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(1, 5 - review.rating.intValue())}"></i>
+                    </th:block>
+                    <th:block th:if="${review.rating == null}">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </th:block>
                 </div>
                 <span class="date-label" th:text="${#temporals.format(review.createdAt, 'dd.MM.yyyy')}"></span>
             </div>
@@ -157,6 +186,10 @@
                     <span th:case="'lash_brows'">Брови & Вії</span>
                     <span th:case="'colorist'">Колористика</span>
                     <span th:case="*" th:text="${review.serviceType}"></span>
+                </span>
+
+                <span class="verified-badge" th:if="${review.appointment != null}">
+                    <i class="fas fa-check-circle"></i> Підтверджений візит
                 </span>
             </div>
 

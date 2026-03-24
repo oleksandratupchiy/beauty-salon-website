@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Записи | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root { --pink: #ef629f; --dark: #333; --bg: #f8f9fa; --text-muted: #858796; }
+    body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; display: flex; }
+
+    /* Sidebar Styles */
+    .sidebar { width: 260px; height: 100vh; background: var(--dark); color: white; padding: 25px; position: fixed; box-sizing: border-box; display: flex; flex-direction: column; }
+    .sidebar-header { margin-bottom: 40px; padding-left: 15px; }
+    .sidebar h2 { color: var(--pink); font-size: 1.4rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+    .sidebar-menu { flex-grow: 1; }
+    .sidebar a { display: flex; align-items: center; color: #bbb; text-decoration: none; padding: 15px; border-radius: 10px; transition: 0.3s; margin-bottom: 5px; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(239, 98, 159, 0.1); color: var(--pink); }
+    .sidebar i { margin-right: 15px; width: 20px; text-align: center; font-size: 1.1rem; }
+    .sidebar-footer { margin-top: auto; border-top: 1px solid #444; padding-top: 15px; }
+
+    /* Main Content */
+    .main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; }
+    .header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0; }
+    .header h1 { margin: 0; font-size: 1.75rem; color: var(--dark); }
+
+    /* Table Styles */
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+    th { background: var(--pink); color: white; padding: 18px; text-align: left; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    td { padding: 18px; border-bottom: 1px solid #f2f2f2; color: #444; font-size: 0.95rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: #fffcfd; }
+
+    .client-name { font-weight: 700; color: var(--dark); display: block; }
+    .client-email { font-size: 0.85rem; color: var(--text-muted); }
+
+    .badge { background: #f1f3f9; color: #4e73df; padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+    .date-info { color: #555; white-space: nowrap; }
+    .date-info i { color: var(--pink); margin-right: 5px; }
+
+    .btn-delete { color: #e74a3b; text-decoration: none; font-size: 1.2rem; transition: 0.3s; padding: 10px; border-radius: 8px; }
+    .btn-delete:hover { background: rgba(231, 74, 59, 0.1); transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>Beauty Admin</h2>
+  </div>
+  <div class="sidebar-menu">
+    <a th:href="@{/admin/dashboard}"><i class="fas fa-chart-line"></i> Дашборд</a>
+    <a th:href="@{/admin/masters}"><i class="fas fa-user-tie"></i> Майстри</a>
+    <a th:href="@{/admin/services}"><i class="fas fa-spa"></i> Послуги</a>
+    <a th:href="@{/admin/appointments}" class="active"><i class="fas fa-calendar-check"></i> Записи клієнтів</a>
+    <a th:href="@{/admin/port}"><i class="fas fa-file-import"></i> Порт даних</a>
+  </div>
+  <div class="sidebar-footer">
+    <a th:href="@{/logout}" style="color: #e74a3b;"><i class="fas fa-sign-out-alt"></i> Вихід</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1>Актуальні записи</h1>
+    <p style="color: var(--text-muted); margin-top: 10px;">Керування чергою та розкладом салону</p>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Клієнт</th>
+      <th>Послуга</th>
+      <th>Майстер</th>
+      <th>Дата та Час</th>
+      <th style="text-align: center;">Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="app : ${appointments}">
+      <td>
+        <span class="client-name" th:text="${app.client?.name ?: 'Гість'}">Клієнт</span>
+        <span class="client-email" th:text="${app.client?.email ?: '-'}">email@example.com</span>
+      </td>
+      <td>
+        <span style="font-weight: 600;" th:text="${app.service?.title ?: 'Видалено'}">Послуга</span>
+      </td>
+      <td>
+        <span class="badge" th:text="${app.master?.name ?: 'Немає'}">Майстер</span>
+      </td>
+      <td class="date-info">
+        <div><i class="far fa-calendar-alt"></i> <span th:text="${app.date}">Дата</span></div>
+        <div style="margin-top: 5px;"><i class="far fa-clock"></i> <span th:text="${app.time}">Час</span></div>
+      </td>
+      <td style="text-align: center;">
+        <a th:href="@{/admin/appointments/delete/{id}(id=${app.id})}"
+           class="btn-delete" title="Скасувати запис"
+           onclick="return confirm('Ви впевнені, що хочете видалити цей запис?')">
+          <i class="fas fa-trash-alt"></i>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
