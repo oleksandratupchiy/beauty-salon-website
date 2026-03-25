@@ -3,122 +3,645 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Beauty Salon | Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         :root {
-            --pink: #ffafbd;
-            --gradient: linear-gradient(135deg, #eecda3 0%, #ef629f 100%);
-            --soft-blue: #e3f2fd;
-            --soft-pink: #fce4ec;
-            --dark-pink: #ff1493;
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --accent3: #323232;
+
+            --text: #323232;
+            --text-muted: #8E99A7;
+
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
         }
 
-        body { font-family: 'Montserrat', sans-serif; margin: 0; background-color: #fafafa; color: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .navbar {
-            display: flex; justify-content: space-between; padding: 20px 50px;
-            background: white; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 1000;
+        body {
+            /* Замінили основний шрифт на Montserrat */
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
         }
 
-        .nav-links a {
-            margin: 0 15px; text-decoration: none; color: #333;
-            font-weight: 500; text-transform: uppercase; font-size: 14px; transition: 0.3s;
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px;
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7);
+            display: flex;
+            flex-direction: column;
+            padding: 36px 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05);
+            z-index: 100;
+            flex-shrink: 0;
         }
 
-        .nav-links a:hover { color: var(--dark-pink); }
+        .sidebar-logo {
+            /* Замінили шрифт логотипу на Bricolage Grotesque */
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 19px; /* Трохи збільшив для цього шрифту */
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text);
+            text-transform: uppercase;
+            margin-bottom: 36px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
 
-        .hero {
-            height: 450px; background: linear-gradient(to right, var(--soft-blue), var(--soft-pink));
-            display: flex; align-items: center; justify-content: center; text-align: center;
+        .sidebar-profile {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 36px; gap: 8px;
+            text-decoration: none; padding: 15px 10px;
+            border-radius: 20px; transition: all 0.3s ease;
+            border: 1px solid transparent; cursor: pointer;
+        }
+        .sidebar-profile:hover {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: var(--card-border);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(117, 128, 156, 0.15);
+        }
+        .avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: #fff;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.3);
+            transition: transform 0.3s;
+        }
+        .sidebar-profile:hover .avatar { transform: scale(1.05); }
+        .profile-name { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; }
+        .profile-sub { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75);
+            color: var(--text);
+            box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+
+        .sidebar-social {
+            display: flex; gap: 14px; margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(142, 153, 167, 0.2);
+        }
+        .sidebar-social a {
+            color: var(--text-muted);
+            font-size: 15px;
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+        .sidebar-social a:hover { color: var(--accent); }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 36px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
         }
 
-        .hero h1 { font-size: 3.5rem; margin-bottom: 10px; font-weight: 700; color: #222; }
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        .search-bar {
+            flex: 1;
+            max-width: 420px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: var(--shadow);
+        }
+        .search-bar i { color: var(--text-muted); font-size: 13px; }
+        .search-bar input {
+            border: none; background: transparent;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px; color: var(--text);
+            width: 100%; outline: none;
+        }
+        .search-bar input::placeholder { color: var(--text-muted); }
 
-        .section-title {
-            text-align: center; margin: 60px 0 40px; font-size: 28px;
-            letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
+        .topbar-links { display: flex; gap: 28px; align-items: center; }
+        .topbar-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13px; font-weight: 500;
+            transition: color 0.2s;
+        }
+        .topbar-links a:hover { color: var(--text); }
+
+        .btn-book {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--text);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.25);
+        }
+        .btn-book:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(117, 128, 156, 0.4);
         }
 
-        .category-grid { display: flex; justify-content: center; gap: 25px; padding: 0 50px 80px; }
-
-        .category-card {
-            flex: 1; max-width: 300px; height: 220px; background: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 20px; text-decoration: none; color: #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s; border: 1px solid #f0f0f0;
+        /* ── HERO CARD ── */
+        .hero-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 50px 50px 50px 60px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: 200px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(50, 50, 50, 0.08), transparent 70%);
+            border-radius: 50%;
         }
 
-        .category-card i { font-size: 35px; margin-bottom: 20px; color: var(--dark-pink); }
-        .category-card:hover { transform: translateY(-12px); background: var(--gradient); color: white; }
-        .category-card:hover i { color: white; }
-
-        .btn-main {
-            padding: 12px 35px; border-radius: 30px; border: none; background: #333;
-            color: white; cursor: pointer; transition: 0.3s; text-decoration: none;
-            display: inline-block; font-weight: 600; text-transform: uppercase; font-size: 13px;
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 14px;
+        }
+        .hero-label::before {
+            content: '';
+            width: 20px; height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
         }
 
-        .btn-main:hover { background: var(--dark-pink); transform: scale(1.05); }
-        .user-greeting { font-size: 14px; margin-right: 15px; font-weight: 600; color: var(--dark-pink); }
-        footer { text-align: center; padding: 50px; background: white; border-top: 1px solid #eee; font-size: 14px; color: #999; }
+        .hero-title {
+            /* Шрифт заголовку */
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+        .tag {
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.8);
+            color: var(--text-muted);
+            border: 1px solid rgba(142, 153, 167, 0.3);
+        }
+
+        .hero-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 420px;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .hero-actions { display: flex; gap: 14px; align-items: center; }
+        .btn-outline {
+            padding: 12px 28px;
+            border-radius: 50px;
+            border: 1.5px solid rgba(142, 153, 167, 0.4);
+            background: rgba(255,255,255,0.6);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.95);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hero-image-area {
+            width: 180px; height: 240px;
+            background: linear-gradient(145deg, rgba(50, 50, 50, 0.1), rgba(117, 128, 156, 0.15));
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-muted);
+            box-shadow: 0 12px 40px rgba(117, 128, 156, 0.1);
+            position: relative;
+        }
+        .hero-image-area i { font-size: 32px; color: var(--accent2); opacity: 0.7; }
+
+        /* ── BOTTOM GRID ── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        /* ── SERVICES CARD ── */
+        .services-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px;
+        }
+        .card-title {
+            /* Заголовки карток */
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 22px;
+            letter-spacing: -0.01em;
+        }
+
+        .service-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(142, 153, 167, 0.2);
+            transition: 0.2s;
+        }
+        .service-row:last-child { border-bottom: none; }
+        .service-row:hover .service-name { color: var(--accent); }
+
+        .service-name { font-size: 13.5px; color: var(--text); font-weight: 600; }
+        .service-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* ── INFO CARD ── */
+        .info-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .why-list { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+        .why-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            font-size: 13px; color: var(--text-muted); line-height: 1.5; font-weight: 500;
+        }
+        .why-icon {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(117, 128, 156, 0.15), rgba(50, 50, 50, 0.15));
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .cta-inline {
+            margin-top: auto;
+            padding: 18px 22px;
+            background: linear-gradient(135deg, rgba(117, 128, 156, 0.1), rgba(50, 50, 50, 0.1));
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.6);
+            text-align: center;
+        }
+        .cta-inline p { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; font-weight: 500; }
+
+        /* ── MASTERS PREVIEW ── */
+        .masters-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px;
+        }
+        .masters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 22px;
+        }
+        .master-card {
+            background: rgba(255,255,255,0.5);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: 0.25s;
+            cursor: pointer;
+        }
+        .master-card:hover {
+            background: rgba(255,255,255,0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(117, 128, 156, 0.1);
+        }
+        .master-avatar {
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff;
+        }
+        .master-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .master-spec { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+        /* animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-card { animation: fadeUp 0.5s ease both; }
+        .bottom-grid > * { animation: fadeUp 0.5s ease both; }
+        .bottom-grid > *:nth-child(2) { animation-delay: 0.1s; }
+        .masters-section { animation: fadeUp 0.5s 0.18s ease both; }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="logo"><strong>BEAUTY</strong>SALON</div>
-    <div class="nav-links">
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/services}">Services</a>
-        <a th:href="@{/masters}">Masters</a>
-        <a th:href="@{/reviews}">Reviews</a>
-        <a th:href="@{/appointment}">Booking</a>
+<aside class="sidebar">
+    <div class="sidebar-logo"> <span>Dunya</span> Beauty</div>
+
+    <a th:href="@{/login}" class="sidebar-profile" sec:authorize="isAnonymous()">
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <div class="profile-name">Мій кабінет</div>
+        <div class="profile-sub">Увійти / Реєстрація</div>
+    </a>
+
+    <a th:href="@{/profile}" class="sidebar-profile" sec:authorize="isAuthenticated()">
+        <div class="avatar"><i class="fas fa-check"></i></div>
+        <div class="profile-name" th:text="${clientName != null ? clientName : 'Гість'}">Ім'я Клієнта</div>
+        <div class="profile-sub">Мій профіль</div>
+    </a>
+
+    <nav class="sidebar-nav">
+        <a th:href="@{/}" class="nav-item active">
+            <i class="fas fa-home"></i> Головна
+        </a>
+        <a th:href="@{/services}" class="nav-item">
+            <i class="fas fa-spa"></i> Послуги
+        </a>
+        <a th:href="@{/masters}" class="nav-item">
+            <i class="fas fa-magic"></i> Майстри
+        </a>
+        <a th:href="@{/reviews}" class="nav-item">
+            <i class="fas fa-comment-dots"></i> Відгуки
+        </a>
+        <a th:href="@{/appointment}" class="nav-item">
+            <i class="fas fa-calendar-check"></i> Записатись
+        </a>
+    </nav>
+
+    <div class="sidebar-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+    </div>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div class="contact-info" style="display: flex; gap: 25px; font-size: 13px; font-weight: 600; color: var(--text-muted);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
+                <span>Київ, вул. Зої Бутенко, 6</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-phone-alt" style="color: var(--accent);"></i>
+                <span>+38 (067) 000-67-67</span>
+            </div>
+        </div>
+        <div class="topbar-links">
+            <a th:href="@{/services}">Послуги</a>
+            <a th:href="@{/masters}">Майстри</a>
+            <a th:href="@{/reviews}">Відгуки</a>
+        </div>
+        <a th:href="@{/appointment}" class="btn-book">
+            <i class="fas fa-calendar-plus"></i> Записатись
+        </a>
     </div>
 
-    <div class="auth-buttons">
-        <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn-main">Вхід / Реєстрація</a>
-
-        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center;">
-            <span class="user-greeting">
-                <i class="fas fa-user-circle"></i> Привіт, <span sec:authentication="name"></span>!
-            </span>
-            <a th:href="@{/profile}" class="btn-main" style="background: var(--dark-pink);">Мій Профіль</a>
+    <div class="hero-card">
+        <div class="hero-content">
+            <div class="hero-label">Преміум догляд · Київ</div>
+            <h1 class="hero-title">Art of Beauty</h1>
+            <div class="hero-tags">
+                <span class="tag">Манікюр</span>
+                <span class="tag">Косметологія</span>
+                <span class="tag">Стрижки</span>
+                <span class="tag">Spa-ритуали</span>
+            </div>
+            <p class="hero-desc">
+                Ваш простір естетики та спокою. Ми створюємо образи, що підкреслюють вашу природну унікальність через призму сучасного догляду та преміальних продуктів.
+            </p>
+            <div class="hero-actions">
+                <a th:href="@{/services}" class="btn-book">
+                    <i class="fas fa-sparkles"></i> Переглянути послуги
+                </a>
+                <a th:href="@{/appointment}" class="btn-outline">Записатись онлайн</a>
+            </div>
+        </div>
+        <div class="hero-image-area" style="padding: 0; overflow: hidden; display: block;">
+            <img th:src="@{/images/image.jpg}" alt="Інтер'єр салону"
+                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 17px;">
         </div>
     </div>
-</nav>
 
-<section class="hero">
-    <div>
-        <h1>Відчуй свою красу</h1>
-        <p style="font-size: 1.2rem; color: #555; margin-bottom: 30px;">Професійний догляд та релакс у самому серці Києва</p>
-        <a th:href="@{/appointment}" class="btn-main" style="padding: 15px 45px; font-size: 15px;">Записатись зараз</a>
+    <div class="bottom-grid">
+
+        <div class="services-card">
+            <h2 class="card-title">Популярні ритуали</h2>
+
+            <div class="service-row">
+                <div>
+                    <div class="service-name">Креативний манікюр</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Складні дизайни для яскравих клієнтів</div>
+                </div>
+                <span class="service-price">від 950 ₴</span>
+            </div>
+            <div class="service-row">
+                <div>
+                    <div class="service-name">SPA-догляд для волосся</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">За корейською методикою</div>
+                </div>
+                <span class="service-price">800 ₴</span>
+            </div>
+            <div class="service-row">
+                <div>
+                    <div class="service-name">Багатошарова стрижка</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Для кардинальної зміни образу</div>
+                </div>
+                <span class="service-price">800 ₴</span>
+            </div>
+            <div class="service-row">
+                <div>
+                    <div class="service-name">Біоревіталізація</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Ефективне відновлення шкіри</div>
+                </div>
+                <span class="service-price">3200 ₴</span>
+            </div>
+
+            <div style="margin-top:22px;">
+                <a th:href="@{/services}" class="btn-outline" style="font-size:12px;">
+                    Усі послуги →
+                </a>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h2 class="card-title">Чому Dunya Beauty?</h2>
+
+            <div class="why-list">
+                <div class="why-item">
+                    <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div>Високі стандарти стерилізації та одноразові інструменти для кожного клієнта</div>
+                </div>
+                <div class="why-item">
+                    <div class="why-icon"><i class="fas fa-award"></i></div>
+                    <div>Майстри з досвідом від 5 років, сертифіковані в Україні та Європі</div>
+                </div>
+                <div class="why-item">
+                    <div class="why-icon"><i class="fas fa-leaf"></i></div>
+                    <div>Тільки преміальна косметика та натуральні складники у всіх процедурах</div>
+                </div>
+            </div>
+
+            <div class="cta-inline">
+                <p>Забронюйте зручний час онлайн<br>за 1 хвилину — без дзвінків</p>
+                <a th:href="@{/appointment}" class="btn-book" style="font-size:12px;">
+                    Записатись зараз
+                </a>
+            </div>
+        </div>
     </div>
-</section>
 
-<h2 class="section-title">Наші можливості</h2>
-<div class="category-grid">
-    <a th:href="@{/services}" class="category-card">
-        <i class="fas fa-spa"></i>
-        <h3>ПОСЛУГИ</h3>
-    </a>
+    <div class="masters-section">
+        <h2 class="card-title">Наша команда — Dunya Team</h2>
+        <div class="masters-grid">
+            <div class="master-card">
+                <div class="master-avatar" style="background: linear-gradient(135deg, var(--accent), var(--accent2));">
+                    <i class="fas fa-user" style="color:#fff;"></i>
+                </div>
+                <div class="master-name">Вероніка</div>
+                <div class="master-spec">Майстер манікюру</div>
+            </div>
+            <div class="master-card">
+                <div class="master-avatar" style="background: linear-gradient(135deg, var(--accent2), var(--accent3));">
+                    <i class="fas fa-user" style="color:#fff;"></i>
+                </div>
+                <div class="master-name">Катерина</div>
+                <div class="master-spec">Косметолог</div>
+            </div>
+            <div class="master-card">
+                <div class="master-avatar" style="background: linear-gradient(135deg, var(--accent3), var(--accent));">
+                    <i class="fas fa-user" style="color:#fff;"></i>
+                </div>
+                <div class="master-name">Христина</div>
+                <div class="master-spec">Колорист</div>
+            </div>
+        </div>
+        <div style="margin-top:22px;">
+            <a th:href="@{/masters}" class="btn-outline" style="font-size:12px;">
+                Познайомитись з командою →
+            </a>
+        </div>
+    </div>
 
-    <a th:href="@{/masters}" class="category-card">
-        <i class="fas fa-user-sparkles"></i>
-        <h3>МАЙСТРИ</h3>
-    </a>
-
-    <a th:href="@{/reviews}" class="category-card">
-        <i class="fas fa-comment-dots"></i>
-        <h3>ВІДГУКИ</h3>
-    </a>
-</div>
-
-<footer>
-    <p>&copy; 2026 Beauty Salon. м. Київ</p>
-</footer>
+</main>
 
 </body>
 </html>

@@ -1,152 +1,268 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мій Профіль | Beauty Salon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Мій Профіль | DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         :root {
-            --bright-pink: #ff1493;
-            --soft-pink: #fce4ec;
-            --done-green: #2ecc71;
-            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            --text-dark: #2d3436;
+            /* НАША ПАЛІТРА */
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --accent3: #323232;
+
+            --text: #323232;
+            --text-muted: #8E99A7;
+
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
+
+            --danger: #e74c3c;
+            --success: #75809C;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: var(--bg-gradient);
-            margin: 0; padding: 20px; color: var(--text-dark);
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            color: var(--text);
         }
 
-        .profile-container {
-            max-width: 800px; margin: 40px auto;
-            background: white; padding: 40px; border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px; min-height: 100vh; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
+            padding: 36px 20px; position: sticky; top: 0; height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100; flex-shrink: 0;
+        }
+        .sidebar-logo {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700;
+            letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 36px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
+
+        .sidebar-profile {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 36px; gap: 8px;
+            text-decoration: none; padding: 15px 10px; border-radius: 20px; transition: all 0.3s ease;
+            border: 1px solid transparent; cursor: pointer;
+        }
+        .sidebar-profile:hover {
+            background: rgba(255, 255, 255, 0.6); border-color: var(--card-border);
+            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.15);
+        }
+        .avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.3); transition: transform 0.3s;
+        }
+        .sidebar-profile:hover .avatar { transform: scale(1.05); }
+        .profile-name { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; }
+        .profile-sub { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px;
+            color: var(--text-muted); font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+
+        .sidebar-social {
+            display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2);
+        }
+        .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
+        .sidebar-social a:hover { color: var(--accent); }
+
+        /* ── MAIN CONTENT (Профіль) ── */
+        .main {
+            flex: 1; overflow-y: auto; padding: 40px 50px; display: flex; flex-direction: column; gap: 30px;
+        }
+
+        .page-title {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.8rem; font-weight: 700;
+            color: var(--text); letter-spacing: -0.02em; margin-bottom: 10px;
+        }
+
+        .glass-panel {
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+            border-radius: var(--radius); box-shadow: var(--shadow); padding: 35px;
         }
 
         /* Шапка профілю */
-        .profile-header {
-            display: flex; align-items: flex-start; gap: 25px;
-            margin-bottom: 40px; padding-bottom: 30px;
-            border-bottom: 2px solid var(--soft-pink);
+        .profile-header-card {
+            display: flex; align-items: center; gap: 30px;
         }
-
-        .avatar-square {
-            width: 90px; height: 90px; background: var(--bright-pink);
-            color: white; border-radius: 20px; display: flex;
-            align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700;
-            box-shadow: 0 10px 20px rgba(255, 20, 147, 0.2);
-            text-transform: uppercase;
-        }
-
         .profile-info { flex-grow: 1; }
-        .profile-info h2 { margin: 0 0 5px 0; font-size: 1.8rem; }
-        .profile-info p { margin: 5px 0; color: #636e72; font-weight: 500; }
+        .profile-info h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2rem; margin-bottom: 10px; color: var(--text); }
+        .profile-info p { margin: 6px 0; color: var(--text-muted); font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 8px;}
+        .profile-info i { color: var(--accent); width: 16px; text-align: center; }
 
         .btn-edit {
-            background: #f1f2f6; color: var(--text-dark); border: none;
-            padding: 8px 15px; border-radius: 10px; cursor: pointer;
-            font-weight: 600; font-size: 0.85rem; margin-top: 10px; transition: 0.3s;
+            background: rgba(255,255,255,0.7); border: 1px solid rgba(142, 153, 167, 0.4);
+            padding: 10px 20px; border-radius: 50px; cursor: pointer; color: var(--text);
+            font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 12px; margin-top: 15px; transition: 0.3s;
         }
-        .btn-edit:hover { background: #dfe6e9; }
+        .btn-edit:hover { background: #fff; border-color: var(--accent); color: var(--accent); }
 
         /* Записи */
-        .section-title { margin-bottom: 20px; color: #444; font-weight: 700; font-size: 1.3rem; }
+        .section-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.5rem; color: var(--text); margin-bottom: 15px; margin-top: 10px; }
 
         .appointment-card {
-            background: #fff; border: 1px solid #eee; border-radius: 20px;
-            padding: 25px; margin-bottom: 15px; display: flex;
-            justify-content: space-between; align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.45); border: 1px solid var(--card-border);
+            border-radius: 18px; padding: 25px; margin-bottom: 15px; display: flex;
+            justify-content: space-between; align-items: center; transition: 0.3s;
         }
+        .appointment-card:hover { background: rgba(255,255,255,0.7); box-shadow: 0 8px 24px rgba(117, 128, 156, 0.08); transform: translateY(-2px); }
 
-        .appointment-card.past {
-            background: #f8f9fa; border-left: 5px solid var(--done-green); opacity: 0.85;
+        .appointment-card.past { opacity: 0.8; border-left: 4px solid var(--accent2); background: rgba(220,221,221,0.3); }
+
+        .app-info p { margin: 6px 0; font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 10px;}
+        .app-info i { color: var(--accent); width: 16px; text-align: center; }
+        .app-info b { color: var(--text); font-weight: 600; }
+
+        .actions { display: flex; gap: 12px; align-items: center; }
+
+        .btn-outline {
+            background: rgba(255,255,255,0.6); color: var(--text); border: 1px solid rgba(142, 153, 167, 0.4);
+            padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-family: 'Montserrat';
+            font-size: 12px; transition: 0.3s; text-decoration: none; display: inline-block;
         }
+        .btn-outline:hover { background: #fff; border-color: var(--accent); color: var(--accent); }
 
-        .app-info p { margin: 5px 0; font-size: 0.95rem; }
-
-        .actions { display: flex; gap: 10px; align-items: center; }
-
-        .btn-cancel {
-            background: #fff; color: #ff4d4d; border: 1px solid #ff4d4d;
-            padding: 10px 18px; border-radius: 12px; cursor: pointer;
-            font-weight: 600; font-family: 'Montserrat'; transition: 0.3s;
+        .btn-danger {
+            background: transparent; color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-family: 'Montserrat';
+            font-size: 12px; transition: 0.3s;
         }
-        .btn-cancel:hover { background: #fff5f5; }
+        .btn-danger:hover { background: rgba(231, 76, 60, 0.1); border-color: var(--danger); }
 
-        .btn-reschedule {
-            background: var(--soft-pink); color: var(--bright-pink); border: none;
-            padding: 12px 20px; border-radius: 12px; cursor: pointer;
-            font-weight: 600; font-size: 0.9rem; transition: 0.3s;
+        .btn-solid {
+            background: var(--text); color: #fff; border: none; padding: 10px 20px; border-radius: 50px;
+            cursor: pointer; font-weight: 600; font-family: 'Montserrat'; font-size: 12px;
+            text-decoration: none; transition: 0.3s; box-shadow: 0 4px 12px rgba(50,50,50,0.2);
         }
-        .btn-reschedule:hover { background: #f8bbd0; }
-
-        .btn-review {
-            background: var(--bright-pink); color: white; border: none;
-            padding: 12px 20px; border-radius: 12px; cursor: pointer;
-            font-weight: 700; text-decoration: none; font-size: 0.85rem;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .btn-review:hover { background: #d11079; transform: translateY(-2px); }
+        .btn-solid:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(117,128,156,0.3); }
 
         .status-done {
-            display: inline-block; color: var(--done-green);
-            font-weight: 700; font-size: 0.8rem; margin-top: 10px;
-            text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-block; color: var(--success); font-weight: 700; font-size: 11px; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px; padding: 5px 12px; background: rgba(117,128,156,0.1); border-radius: 20px;
         }
 
         .btn-logout {
-            background: #f8f9fa; color: #666; border: 1px solid #ddd;
-            padding: 15px; border-radius: 15px; cursor: pointer;
-            font-weight: 600; font-family: 'Montserrat'; transition: 0.3s; width: 100%;
-            margin-top: 20px;
+            background: rgba(255,255,255,0.4); color: var(--text); border: 1px solid var(--card-border);
+            padding: 15px; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-family: 'Montserrat';
+            transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 13px;
         }
-        .btn-logout:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; }
+        .btn-logout:hover { background: rgba(231, 76, 60, 0.1); color: var(--danger); border-color: rgba(231, 76, 60, 0.3); }
 
         /* ПОПАПИ (Модальні вікна) */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
+            background: rgba(50,50,50,0.4); z-index: 1000; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
         }
         .modal-content {
-            background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); position: relative;
+            background: var(--card-bg); backdrop-filter: blur(25px); border: 1px solid var(--card-border);
+            padding: 40px; border-radius: var(--radius); width: 90%; max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); position: relative;
         }
         .close-modal {
-            position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #888;
+            position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); transition: 0.2s;
         }
-        .close-modal:hover { color: var(--bright-pink); }
+        .close-modal:hover { color: var(--text); }
+        .modal-content h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.8rem; margin-top: 0; margin-bottom: 25px; text-align: center;}
+
+        .modal-content label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; display: block; }
         .modal-content input, .modal-content select {
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;
-            margin-top: 5px; margin-bottom: 15px; font-family: 'Montserrat'; box-sizing: border-box;
-            font-size: 15px; color: var(--text-dark);
+            width: 100%; padding: 12px 15px; border: 1px solid rgba(142, 153, 167, 0.3); border-radius: 12px;
+            margin-bottom: 20px; font-family: 'Montserrat', sans-serif; font-size: 14px; color: var(--text);
+            background: rgba(255,255,255,0.7); outline: none; transition: 0.3s;
         }
-        .modal-content input:focus { border-color: var(--bright-pink); outline: none; }
+        .modal-content input:focus, .modal-content select:focus { border-color: var(--accent); background: #fff; }
         .btn-save-modal {
-            width: 100%; background: var(--bright-pink); color: white; border: none;
-            padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
-            font-family: 'Montserrat'; font-size: 15px;
+            width: 100%; background: var(--text); color: white; border: none; padding: 15px;
+            border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s;
+            font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
         }
-        .btn-save-modal:hover { background: #d11079; }
+        .btn-save-modal:hover { background: var(--accent); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
+        .empty-text { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
     </style>
 </head>
 <body>
 
-<div class="profile-container">
-    <div style="margin-bottom: 20px;">
-        <a th:href="@{/}" style="text-decoration: none; color: var(--bright-pink); font-weight: 600;">
-            <i class="fas fa-arrow-left"></i> На головну
-        </a>
-    </div>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>Dunya</span> Beauty</div>
 
-    <div class="profile-header">
-        <div class="avatar-square" th:text="${#strings.substring(client.name,0,1)}">К</div>
+    <a th:href="@{/login}" class="sidebar-profile" sec:authorize="isAnonymous()">
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <div class="profile-name">Мій кабінет</div>
+        <div class="profile-sub">Увійти / Реєстрація</div>
+    </a>
+
+    <a th:href="@{/profile}" class="sidebar-profile" sec:authorize="isAuthenticated()">
+        <div class="avatar"><i class="fas fa-check"></i></div>
+        <div class="profile-name" th:text="${client.name}">Ім'я Клієнта</div>
+        <div class="profile-sub">Мій профіль</div>
+    </a>
+
+    <nav class="sidebar-nav">
+        <a th:href="@{/}" class="nav-item">
+            <i class="fas fa-home"></i> Головна
+        </a>
+        <a th:href="@{/services}" class="nav-item">
+            <i class="fas fa-spa"></i> Послуги
+        </a>
+        <a th:href="@{/masters}" class="nav-item">
+            <i class="fas fa-magic"></i> Майстри
+        </a>
+        <a th:href="@{/reviews}" class="nav-item">
+            <i class="fas fa-comment-dots"></i> Відгуки
+        </a>
+        <a th:href="@{/appointment}" class="nav-item">
+            <i class="fas fa-calendar-check"></i> Записатись
+        </a>
+    </nav>
+
+    <div class="sidebar-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+    </div>
+</aside>
+
+<main class="main">
+
+    <h1 class="page-title">Особистий кабінет</h1>
+
+    <div class="glass-panel profile-header-card">
+        <div class="avatar" style="width: 100px; height: 100px; font-size: 40px;" th:text="${#strings.substring(client.name,0,1)}">К</div>
         <div class="profile-info">
             <h2 th:text="${client.name}">Ім'я Клієнта</h2>
             <p><i class="fas fa-envelope"></i> <span th:text="${client.email}">email@example.com</span></p>
@@ -154,81 +270,86 @@
                 <span th:text="${client.phone != null and !client.phone.isEmpty() ? client.phone : 'Номер не вказано'}"></span>
             </p>
             <button class="btn-edit" onclick="openEditProfileModal()">
-                <i class="fas fa-pen"></i> Редагувати профіль
+                <i class="fas fa-pen" style="font-size: 10px;"></i> Редагувати профіль
             </button>
         </div>
     </div>
 
-    <h3 class="section-title">🕒 Активні записи</h3>
-    <div th:if="${#lists.isEmpty(appointments.?[!isPast()])}" style="color: #999; margin-bottom: 30px;">
-        Немає активних записів.
-    </div>
-
-    <div th:each="app : ${appointments}" th:if="${!app.isPast()}" class="appointment-card">
-        <div class="app-info">
-            <p><b><i class="fas fa-cut" style="color: var(--bright-pink); width: 20px;"></i> Послуга:</b> <span th:text="${app.service.title}"></span></p>
-            <p><b><i class="far fa-clock" style="width: 20px;"></i> Коли:</b> <span th:text="${app.date}"></span> о <span th:text="${app.time}"></span></p>
-            <p><b><i class="fas fa-magic" style="width: 20px;"></i> Майстер:</b> <span th:text="${app.master.name}"></span></p>
+    <div class="glass-panel">
+        <h3 class="section-title">Майбутні візити</h3>
+        <div th:if="${#lists.isEmpty(appointments.?[!isPast()])}" class="empty-text">
+            У вас поки немає запланованих візитів.
         </div>
-        <div class="actions">
-            <button class="btn-reschedule" th:onclick="'openRescheduleModal(' + ${app.id} + ', ' + ${app.master.id} + ', ' + ${app.service.id} + ')'">
-                Перенести
-            </button>
-            <form th:action="@{/appointment/cancel}" method="post" style="margin: 0;">
-                <input type="hidden" name="appointmentId" th:value="${app.id}">
-                <button type="submit" class="btn-cancel" onclick="return confirm('Ви впевнені, що хочете скасувати візит?')">Скасувати</button>
-            </form>
-        </div>
-    </div>
 
-    <h3 class="section-title" style="margin-top: 40px;">✅ Історія візитів</h3>
-    <div th:if="${#lists.isEmpty(appointments.?[isPast()])}" style="color: #999;">
-        Історія візитів порожня.
-    </div>
-
-    <div th:each="app : ${appointments}" th:if="${app.isPast()}" class="appointment-card past">
-        <div class="app-info">
-            <p><b><i class="fas fa-cut" style="color: var(--bright-pink); width: 20px;"></i> Послуга:</b> <span th:text="${app.service.title}"></span></p>
-            <p><b><i class="far fa-clock" style="width: 20px;"></i> Коли:</b> <span th:text="${app.date}"></span> о <span th:text="${app.time}"></span></p>
-            <p><b><i class="fas fa-magic" style="width: 20px;"></i> Майстер:</b> <span th:text="${app.master.name}"></span></p>
-            <div class="status-done"><i class="fas fa-check-double"></i> Виконано</div>
-        </div>
-        <div class="actions">
-            <a th:href="@{/reviews/new(appointmentId=${app.id})}" class="btn-review">
-                <i class="fas fa-star"></i> Залишити відгук
-            </a>
+        <div th:each="app : ${appointments}" th:if="${!app.isPast()}" class="appointment-card">
+            <div class="app-info">
+                <p><b><i class="fas fa-spa"></i> Послуга:</b> <span th:text="${app.service.title}"></span></p>
+                <p><b><i class="far fa-calendar-alt"></i> Коли:</b> <span th:text="${app.date}"></span> о <span th:text="${app.time}"></span></p>
+                <p><b><i class="fas fa-user-circle"></i> Майстер:</b> <span th:text="${app.master.name}"></span></p>
+            </div>
+            <div class="actions">
+                <button class="btn-outline" th:onclick="'openRescheduleModal(' + ${app.id} + ', ' + ${app.master.id} + ', ' + ${app.service.id} + ')'">
+                    Перенести
+                </button>
+                <form th:action="@{/appointment/cancel}" method="post" style="margin: 0;">
+                    <input type="hidden" name="appointmentId" th:value="${app.id}">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Ви впевнені, що хочете скасувати візит?')">Скасувати</button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
+    <div class="glass-panel">
+        <h3 class="section-title">Історія візитів</h3>
+        <div th:if="${#lists.isEmpty(appointments.?[isPast()])}" class="empty-text">
+            Історія візитів порожня.
+        </div>
+
+        <div th:each="app : ${appointments}" th:if="${app.isPast()}" class="appointment-card past">
+            <div class="app-info">
+                <p><b><i class="fas fa-spa"></i> Послуга:</b> <span th:text="${app.service.title}"></span></p>
+                <p><b><i class="far fa-calendar-alt"></i> Коли:</b> <span th:text="${app.date}"></span> о <span th:text="${app.time}"></span></p>
+                <p><b><i class="fas fa-user-circle"></i> Майстер:</b> <span th:text="${app.master.name}"></span></p>
+                <div class="status-done"><i class="fas fa-check"></i> Виконано</div>
+            </div>
+            <div class="actions">
+                <a th:href="@{/reviews/new(appointmentId=${app.id})}" class="btn-solid">
+                    Залишити відгук
+                </a>
+            </div>
+        </div>
+    </div>
 
     <form id="logoutForm" th:action="@{/logout}" method="post">
         <button type="button" class="btn-logout" onclick="askBeforeLogout()">
-            <i class="fas fa-sign-out-alt"></i> ВИЙТИ З АККАУНТУ
+            <i class="fas fa-sign-out-alt"></i> Вийти з аккаунту
         </button>
     </form>
-</div>
+
+</main>
 
 <div class="modal-overlay" id="rescheduleModal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeRescheduleModal()">&times;</span>
-        <h3 style="margin-top: 0; text-align: center;">Оберіть новий час</h3>
+        <h3>Зміна часу</h3>
 
         <form th:action="@{/appointment/quick-reschedule}" method="post">
             <input type="hidden" name="appointmentId" id="modalAppId">
             <input type="hidden" id="modalMasterId">
             <input type="hidden" id="modalServiceId">
 
-            <label style="font-size: 0.85rem; font-weight: 600; color: #555;">Нова дата:</label>
+            <label>Нова дата візиту:</label>
             <input type="date" name="date" id="modalDate" required onchange="fetchModalSlots()">
-            <div id="modalDateError" style="color: red; font-size: 0.8rem; display: none;">Вихідний день.</div>
+            <div id="modalDateError" style="color: var(--danger); font-size: 11px; font-weight: 500; display: none; margin-top: -15px; margin-bottom: 15px;">
+                На жаль, це вихідний день. Оберіть інший.
+            </div>
 
-            <label style="font-size: 0.85rem; font-weight: 600; color: #555;">Новий час:</label>
+            <label>Доступний час:</label>
             <select name="time" id="modalTime" required>
-                <option value="" disabled selected>Оберіть дату спочатку</option>
+                <option value="" disabled selected>Спочатку оберіть дату</option>
             </select>
 
-            <button type="submit" class="btn-save-modal">Підтвердити перенесення</button>
+            <button type="submit" class="btn-save-modal">Зберегти зміни</button>
         </form>
     </div>
 </div>
@@ -236,22 +357,21 @@
 <div class="modal-overlay" id="editProfileModal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
-        <h3 style="margin-top: 0; text-align: center;">Редагування профілю</h3>
+        <h3>Ваші дані</h3>
 
         <form th:action="@{/profile/edit}" method="post">
-            <label style="font-size: 0.85rem; font-weight: 600; color: #555;">Ваше ім'я:</label>
+            <label>Як до вас звертатись?</label>
             <input type="text" name="name" th:value="${client.name}" required>
 
-            <label style="font-size: 0.85rem; font-weight: 600; color: #555;">Номер телефону:</label>
+            <label>Номер телефону:</label>
             <input type="tel" name="phone" th:value="${client.phone}" placeholder="+38 (0__) ___-__-__" oninput="formatPhone(this)" required>
 
-            <button type="submit" class="btn-save-modal" style="margin-top: 10px;">Зберегти зміни</button>
+            <button type="submit" class="btn-save-modal">Оновити профіль</button>
         </form>
     </div>
 </div>
 
 <script>
-    // Налаштування мінімальної дати (завтра) для попапу перенесення
     window.onload = function() {
         let tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -264,7 +384,6 @@
         }
     }
 
-    // Маска для телефону
     function formatPhone(input) {
         let matrix = "+38 (0__) ___-__-__", i = 0, def = matrix.replace(/\D/g, ""), val = input.value.replace(/\D/g, "");
         if (def.length >= val.length) val = def;
@@ -273,15 +392,9 @@
         });
     }
 
-    // Логіка Попапу: РЕДАГУВАННЯ ПРОФІЛЮ
-    function openEditProfileModal() {
-        document.getElementById('editProfileModal').style.display = 'flex';
-    }
-    function closeEditProfileModal() {
-        document.getElementById('editProfileModal').style.display = 'none';
-    }
+    function openEditProfileModal() { document.getElementById('editProfileModal').style.display = 'flex'; }
+    function closeEditProfileModal() { document.getElementById('editProfileModal').style.display = 'none'; }
 
-    // Логіка Попапу: ПЕРЕНЕСЕННЯ ВІЗИТУ
     function openRescheduleModal(appId, masterId, serviceId) {
         document.getElementById('modalAppId').value = appId;
         document.getElementById('modalMasterId').value = masterId;
@@ -292,7 +405,7 @@
     function closeRescheduleModal() {
         document.getElementById('rescheduleModal').style.display = 'none';
         document.getElementById('modalDate').value = '';
-        document.getElementById('modalTime').innerHTML = '<option value="" disabled selected>Оберіть дату спочатку</option>';
+        document.getElementById('modalTime').innerHTML = '<option value="" disabled selected>Спочатку оберіть дату</option>';
     }
 
     function fetchModalSlots() {

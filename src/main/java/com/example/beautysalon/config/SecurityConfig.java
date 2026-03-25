@@ -3,9 +3,7 @@ package com.example.beautysalon.config;
 import com.example.beautysalon.service.MyUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,17 +33,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authenticationProvider(authenticationProvider()) // Явно вказуємо провайдер
+                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/", "/services", "/masters", "/reviews", "/register", "/login", "/css/**", "/js/**").permitAll()
+                        // ДОДАНО "/images/**", щоб картинки вантажились для всіх без авторизації
+                        .requestMatchers("/", "/index", "/services", "/masters", "/reviews", "/register", "/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // ВАЖЛИВО: Spring за замовчуванням шукає 'username'.
-                        // Якщо в html у тебе name="email", додай рядок нижче:
-                        // .usernameParameter("email")
                         .successHandler((request, response, authentication) -> {
                             var roles = authentication.getAuthorities();
                             boolean isAdmin = roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));

@@ -1,107 +1,176 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
-  <title>Ваш відгук | Beauty Salon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ваш відгук | DUNYA BEAUTY</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
     :root {
-      --soft-pink: #fce4ec;
-      --main-pink: #ef629f;
-      --soft-blue: #e3f2fd;
-      --bright-pink: #ff1493;
+      /* НАША ПАЛІТРА */
+      --bg: #dcdddd;
+      --card-bg: rgba(255,255,255,0.6);
+      --card-border: rgba(255,255,255,0.85);
+      --sidebar-bg: rgba(255,255,255,0.55);
+
+      --accent: #75809C;
+      --accent2: #8E99A7;
+      --text: #323232;
+      --text-muted: #8E99A7;
+      --stars-color: #8da9c4;
+
+      --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+      --radius: 22px;
+      --danger: #e74c3c;
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg, var(--soft-blue) 0%, var(--soft-pink) 100%);
-      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+      font-family: 'Montserrat', sans-serif; background: var(--bg);
+      background-image: radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%), radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+      min-height: 100vh; display: flex; overflow-x: hidden; color: var(--text);
     }
 
-    .container { width: 100%; max-width: 500px; }
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; min-height: 100vh; background: var(--sidebar-bg); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column; padding: 36px 20px; position: sticky; top: 0; height: 100vh; box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100; flex-shrink: 0; }
+    .sidebar-logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 36px; display: flex; align-items: center; gap: 8px; }
+    .sidebar-logo span { color: var(--accent); }
+    .sidebar-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 36px; gap: 8px; text-decoration: none; padding: 15px 10px; border-radius: 20px; transition: all 0.3s ease; border: 1px solid transparent; cursor: pointer; }
+    .sidebar-profile:hover { background: rgba(255, 255, 255, 0.6); border-color: var(--card-border); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.15); }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 4px 16px rgba(117, 128, 156, 0.3); transition: transform 0.3s; }
+    .sidebar-profile:hover .avatar { transform: scale(1.05); }
+    .profile-name { font-size: 14px; font-weight: 700; text-align: center; }
+    .profile-sub { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; color: var(--text-muted); font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1); }
+    .nav-item.active { color: var(--accent); }
+    .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+    .sidebar-social { display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2); }
+    .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
+    .sidebar-social a:hover { color: var(--accent); }
 
-    .form-container {
-      background: white; padding: 40px; border-radius: 30px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-      text-align: center;
-    }
+    /* ── MAIN CONTENT ── */
+    .main { flex: 1; overflow-y: auto; padding: 36px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+    .topbar { display: flex; align-items: center; gap: 20px; justify-content: space-between; width: 100%; }
+    .contact-info { display: flex; gap: 25px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .contact-info div { display: flex; align-items: center; gap: 8px; }
+    .contact-info i { color: var(--accent); }
+    .topbar-links { display: flex; gap: 28px; align-items: center; margin-left: auto; }
+    .topbar-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; font-weight: 500; transition: color 0.2s; }
+    .topbar-links a:hover { color: var(--text); }
+    .btn-book-top { display: inline-flex; align-items: center; gap: 8px; background: var(--text); color: #fff; padding: 10px 22px; border-radius: 50px; font-size: 12px; font-weight: 600; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.25s; box-shadow: 0 4px 16px rgba(117, 128, 156, 0.25); }
+    .btn-book-top:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.4); }
 
-    h1 { font-size: 1.5rem; color: #333; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-    p { color: #777; font-size: 0.9rem; margin-bottom: 25px; }
+    /* ── FORM CARD ── */
+    .container { width: 100%; max-width: 450px; margin: auto; }
+    .form-container { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border); padding: 45px 40px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; animation: fadeUp 0.5s ease both; }
 
-    .info-preview {
-      background: #f8f9fa; padding: 15px; border-radius: 15px;
-      text-align: left; margin-bottom: 25px; border-left: 4px solid var(--bright-pink);
-    }
+    h1 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.8rem; margin-bottom: 5px; font-weight: 700; letter-spacing: -0.01em; }
+    p { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 25px; }
 
-    .info-preview div { font-size: 0.85rem; margin: 3px 0; color: #555; }
-    .info-preview b { color: #333; }
+    .info-preview { background: rgba(255,255,255,0.5); padding: 15px 20px; border-radius: 14px; text-align: left; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.8); border-left: 4px solid var(--accent); }
+    .info-preview div { font-size: 13px; margin: 8px 0; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .info-preview i { color: var(--accent); width: 14px; text-align: center; }
+    .info-preview b { color: var(--text); font-weight: 600; width: 65px; }
 
-    textarea {
-      width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 15px;
-      outline: none; font-family: 'Montserrat', sans-serif; box-sizing: border-box;
-      resize: none; margin-bottom: 20px; transition: 0.3s;
-    }
-    textarea:focus { border-color: var(--main-pink); box-shadow: 0 0 10px rgba(239, 98, 159, 0.1); }
+    textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(142, 153, 167, 0.3); border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.7); outline: none; font-family: 'Montserrat', sans-serif; color: var(--text); font-size: 14px; transition: 0.3s; resize: vertical; min-height: 120px; }
+    textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 4px 15px rgba(117, 128, 156, 0.1); }
 
-    /* Зірочки як у тебе */
-    .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 20px; }
+    .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 25px; gap: 5px;}
     .rating-input input { display: none; }
-    .rating-input label { font-size: 40px; color: #ddd; cursor: pointer; transition: 0.2s; padding: 0 5px; }
-    .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--bright-pink); }
+    .rating-input label { font-size: 38px; color: rgba(142, 153, 167, 0.3); cursor: pointer; transition: 0.2s; padding: 0 2px; }
+    .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--stars-color); }
 
-    .submit-btn {
-      width: 100%; background: var(--main-pink); color: white; padding: 16px;
-      border: none; border-radius: 15px; font-weight: 700; cursor: pointer;
-      transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-    }
-    .submit-btn:hover { background: var(--bright-pink); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3); }
+    .submit-btn { width: 100%; background: var(--text); color: white; padding: 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; box-shadow: 0 4px 12px rgba(50,50,50,0.2); }
+    .submit-btn:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
 
-    .back-link { display: inline-block; margin-top: 20px; color: #999; text-decoration: none; font-size: 0.8rem; font-weight: 600; }
-    .back-link:hover { color: var(--main-pink); }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 25px; color: var(--text-muted); text-decoration: none; font-size: 12px; font-weight: 600; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+    .back-link:hover { color: var(--danger); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="form-container">
-    <h1>Твій відгук</h1>
-    <p>Поділися враженнями від візиту</p>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>Dunya</span> Beauty</div>
+  <a th:href="@{/login}" class="sidebar-profile" sec:authorize="isAnonymous()">
+    <div class="avatar"><i class="fas fa-user"></i></div>
+    <div class="profile-name">Мій кабінет</div>
+    <div class="profile-sub">Увійти / Реєстрація</div>
+  </a>
+  <a th:href="@{/profile}" class="sidebar-profile" sec:authorize="isAuthenticated()">
+    <div class="avatar"><i class="fas fa-check"></i></div>
+    <div class="profile-name" th:text="${clientName != null ? clientName : 'Гість'}">Ім'я Клієнта</div>
+    <div class="profile-sub">Мій профіль</div>
+  </a>
+  <nav class="sidebar-nav">
+    <a th:href="@{/}" class="nav-item"><i class="fas fa-home"></i> Головна</a>
+    <a th:href="@{/services}" class="nav-item"><i class="fas fa-spa"></i> Послуги</a>
+    <a th:href="@{/masters}" class="nav-item"><i class="fas fa-magic"></i> Майстри</a>
+    <a th:href="@{/reviews}" class="nav-item active"><i class="fas fa-comment-dots"></i> Відгуки</a>
+    <a th:href="@{/appointment}" class="nav-item"><i class="fas fa-calendar-check"></i> Записатись</a>
+  </nav>
+</aside>
 
-    <div class="info-preview">
-      <div><b>Послуга:</b> <span th:text="${app.service.title}"></span></div>
-      <div><b>Майстер:</b> <span th:text="${app.master.name}"></span></div>
-      <div><b>Дата:</b> <span th:text="${app.date}"></span></div>
+<main class="main">
+  <div class="topbar">
+    <div class="contact-info">
+      <div><i class="fas fa-map-marker-alt"></i><span>Київ, вул. Зої Бутенко, 6</span></div>
+      <div><i class="fas fa-phone-alt"></i><span>+38 (067) 000-67-67</span></div>
     </div>
+    <div class="topbar-links">
+      <a th:href="@{/services}">Послуги</a>
+      <a th:href="@{/masters}">Майстри</a>
+      <a th:href="@{/reviews}">Відгуки</a>
+    </div>
+    <a th:href="@{/appointment}" class="btn-book-top"><i class="fas fa-calendar-plus"></i> Записатись</a>
+  </div>
 
-    <form th:action="@{/reviews/add}" method="post">
-      <input type="hidden" name="appointmentId" th:value="${app.id}">
-      <input type="hidden" name="clientName" th:value="${app.client.name}">
-      <input type="hidden" name="masterName" th:value="${app.master.name}">
-      <input type="hidden" name="serviceType" th:value="${app.service.title}">
+  <div class="container">
+    <div class="form-container">
+      <h1>Твій відгук</h1>
+      <p>Поділися враженнями від візиту</p>
 
-      <div class="rating-input">
-        <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
-        <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
-        <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
-        <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
-        <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+      <div class="info-preview">
+        <div><i class="fas fa-spa"></i> <b>Послуга:</b> <span th:text="${app.service.title}"></span></div>
+        <div><i class="fas fa-user-circle"></i> <b>Майстер:</b> <span th:text="${app.master.name}"></span></div>
+        <div><i class="far fa-calendar-alt"></i> <b>Дата:</b> <span th:text="${app.date}"></span></div>
       </div>
 
-      <textarea name="text" rows="5" placeholder="Що тобі сподобалося найбільше?" required></textarea>
+      <form th:action="@{/reviews/add}" method="post">
+        <input type="hidden" name="appointmentId" th:value="${app.id}">
+        <input type="hidden" name="clientName" th:value="${app.client.name}">
+        <input type="hidden" name="masterName" th:value="${app.master.name}">
+        <input type="hidden" name="serviceType" th:value="${app.service.title}">
 
-      <button type="submit" class="submit-btn">Опублікувати</button>
-    </form>
+        <div class="rating-input">
+          <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
+          <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+          <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+          <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+          <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+        </div>
 
-    <a th:href="@{/profile}" class="back-link">
-      <i class="fas fa-times"></i> СКАСУВАТИ
-    </a>
+        <textarea name="text" rows="5" placeholder="Що тобі сподобалося найбільше?" required></textarea>
+
+        <button type="submit" class="submit-btn">Опублікувати</button>
+      </form>
+
+      <a th:href="@{/profile}" class="back-link">
+        <i class="fas fa-times"></i> Скасувати
+      </a>
+    </div>
   </div>
-</div>
+</main>
 
 </body>
 </html>

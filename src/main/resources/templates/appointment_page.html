@@ -1,94 +1,190 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Запис до салону | Beauty Salon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Запис до салону | DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root {
-            --primary-pink: #ff1493;
-            --hover-pink: #ff69b4;
-            --light-pink: #fff0f6;
-            --text-dark: #2d3436;
-            --border-color: #dfe6e9;
-            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            --warning-color: #f39c12;
+            /* НАША ПАЛІТРА */
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --accent3: #323232;
+
+            --text: #323232;
+            --text-muted: #8E99A7;
+
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
+
+            --warning-color: #d35400;
+            --danger: #e74c3c;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: var(--bg-gradient);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
             min-height: 100vh;
-            margin: 0;
-            color: var(--text-dark);
+            display: flex;
+            overflow-x: hidden;
+            color: var(--text);
         }
 
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px; min-height: 100vh; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
+            padding: 36px 20px; position: sticky; top: 0; height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100; flex-shrink: 0;
+        }
+        .sidebar-logo {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700;
+            letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 36px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
+        .sidebar-profile {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 36px; gap: 8px;
+            text-decoration: none; padding: 15px 10px; border-radius: 20px; transition: all 0.3s ease;
+            border: 1px solid transparent; cursor: pointer;
+        }
+        .sidebar-profile:hover {
+            background: rgba(255, 255, 255, 0.6); border-color: var(--card-border);
+            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.15);
+        }
+        .avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.3); transition: transform 0.3s;
+        }
+        .sidebar-profile:hover .avatar { transform: scale(1.05); }
+        .profile-name { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; }
+        .profile-sub { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px;
+            color: var(--text-muted); font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+        .sidebar-social {
+            display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2);
+        }
+        .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
+        .sidebar-social a:hover { color: var(--accent); }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            flex: 1; overflow-y: auto; padding: 36px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex; align-items: center; gap: 20px; justify-content: space-between; width: 100%;
+        }
+        .contact-info { display: flex; gap: 25px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .contact-info div { display: flex; align-items: center; gap: 8px; }
+        .contact-info i { color: var(--accent); }
+        .topbar-links { display: flex; gap: 28px; align-items: center; margin-left: auto; }
+        .topbar-links a {
+            text-decoration: none; color: var(--text-muted); font-size: 13px; font-weight: 500; transition: color 0.2s;
+        }
+        .topbar-links a:hover { color: var(--text); }
+        .btn-book-top {
+            display: inline-flex; align-items: center; gap: 8px; background: var(--text); color: #fff;
+            padding: 10px 22px; border-radius: 50px; font-size: 12px; font-weight: 600;
+            text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.25);
+        }
+        .btn-book-top:hover {
+            background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.4);
+        }
+
+        /* ── БЛОК БРОНЮВАННЯ ── */
         .booking-card {
-            background: #ffffff;
-            padding: 40px 50px;
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(255, 20, 147, 0.1);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            padding: 45px 50px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             width: 100%;
-            max-width: 500px;
-            border: 1px solid rgba(255, 20, 147, 0.05);
+            max-width: 550px;
+            animation: fadeUp 0.5s ease both;
         }
 
-        h2 {
+        .page-title {
+            font-family: 'Bricolage Grotesque', sans-serif;
             font-weight: 700;
             text-align: center;
-            color: var(--text-dark);
-            font-size: 24px;
+            color: var(--text);
+            font-size: 2rem;
             margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 0;
+            letter-spacing: -0.02em;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 22px; }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            font-size: 13px;
-            color: #636e72;
+            font-size: 12px;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         input, select {
             width: 100%;
-            padding: 14px 18px;
+            padding: 15px 18px;
             border-radius: 12px;
-            border: 2px solid var(--border-color);
+            border: 1px solid rgba(142, 153, 167, 0.3);
             font-family: 'Montserrat', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
-            color: var(--text-dark);
+            color: var(--text);
             transition: all 0.3s ease;
             box-sizing: border-box;
-            background-color: #fafafa;
+            background-color: rgba(255,255,255,0.7);
+            outline: none;
         }
 
         input:focus, select:focus {
-            border-color: var(--primary-pink);
+            border-color: var(--accent);
             background-color: #fff;
-            outline: none;
-            box-shadow: 0 0 10px rgba(255, 20, 147, 0.1);
+            box-shadow: 0 4px 15px rgba(117, 128, 156, 0.1);
         }
 
         input[readonly] {
-            background-color: #f1f2f6;
-            border-color: #f1f2f6;
-            color: #b2bec3;
+            background-color: rgba(255,255,255,0.3);
+            color: var(--text-muted);
             cursor: not-allowed;
+            border-color: transparent;
         }
 
         .row {
@@ -101,28 +197,28 @@
         }
 
         .warning-box {
-            background-color: #fcf3cf;
-            border-left: 5px solid var(--warning-color);
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            font-size: 14px;
+            background-color: rgba(211, 84, 0, 0.05);
+            border-left: 4px solid var(--warning-color);
+            padding: 18px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            font-size: 13px;
             line-height: 1.5;
+            color: var(--text);
         }
 
         .warning-box p {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             font-weight: 600;
-            color: #d35400;
+            color: var(--warning-color);
         }
 
         .checkbox-container {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #d35400;
             cursor: pointer;
         }
 
@@ -134,126 +230,178 @@
 
         .submit-btn {
             width: 100%;
-            padding: 16px;
-            background: var(--primary-pink);
+            padding: 18px;
+            background: var(--text);
             color: #fff;
             border: none;
-            border-radius: 12px;
+            border-radius: 50px;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 8px 15px rgba(255, 20, 147, 0.2);
+            margin-top: 15px;
+            box-shadow: 0 8px 20px rgba(50,50,50,0.2);
         }
 
         .submit-btn:hover {
-            background: var(--hover-pink);
+            background: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 12px 20px rgba(255, 20, 147, 0.3);
+            box-shadow: 0 12px 25px rgba(117,128,156,0.3);
         }
 
         .error-msg {
-            color: #e74c3c;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 5px;
+            color: var(--danger);
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
             display: none;
         }
 
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-            text-decoration: none;
-            color: #b2bec3;
-            font-size: 13px;
-            font-weight: 600;
-            transition: color 0.3s;
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .back-link:hover {
-            color: var(--primary-pink);
-        }
     </style>
 </head>
 <body>
 
-<div class="booking-card">
-    <h2 th:text="${rescheduleId != null ? 'Перенесення візиту' : 'Запис на візит'}">Запис на візит</h2>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>Dunya</span> Beauty</div>
 
-    <form th:action="@{/appointment/save}" method="post" onsubmit="return validateForm()">
+    <a th:href="@{/login}" class="sidebar-profile" sec:authorize="isAnonymous()">
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <div class="profile-name">Мій кабінет</div>
+        <div class="profile-sub">Увійти / Реєстрація</div>
+    </a>
 
-        <input type="hidden" name="rescheduleId" th:if="${rescheduleId != null}" th:value="${rescheduleId}">
+    <a th:href="@{/profile}" class="sidebar-profile" sec:authorize="isAuthenticated()">
+        <div class="avatar"><i class="fas fa-check"></i></div>
+        <div class="profile-name" th:text="${clientName != null ? clientName : 'Гість'}">Ім'я Клієнта</div>
+        <div class="profile-sub">Мій профіль</div>
+    </a>
 
-        <div class="warning-box" th:if="${warning == 'duplicate'}">
-            <p><i class="fas fa-exclamation-triangle"></i> Увага! У вас вже є запис на обраний час (<span th:text="${tempDate}"></span> о <span th:text="${tempTime}"></span>).</p>
-            <label class="checkbox-container">
-                <input type="checkbox" name="forceSave" value="true">
-                Так, я хочу додати ще одну процедуру на цей час
-            </label>
-        </div>
+    <nav class="sidebar-nav">
+        <a th:href="@{/}" class="nav-item">
+            <i class="fas fa-home"></i> Головна
+        </a>
+        <a th:href="@{/services}" class="nav-item">
+            <i class="fas fa-spa"></i> Послуги
+        </a>
+        <a th:href="@{/masters}" class="nav-item">
+            <i class="fas fa-magic"></i> Майстри
+        </a>
+        <a th:href="@{/reviews}" class="nav-item">
+            <i class="fas fa-comment-dots"></i> Відгуки
+        </a>
+        <a th:href="@{/appointment}" class="nav-item active">
+            <i class="fas fa-calendar-check"></i> Записатись
+        </a>
+    </nav>
 
-        <div class="form-group">
-            <label>Ваше ім'я</label>
-            <input type="text" th:value="${clientName}" readonly required>
-        </div>
+    <div class="sidebar-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+    </div>
+</aside>
 
-        <div class="form-group">
-            <label>Номер телефону</label>
-            <input type="tel" id="phoneInput" name="clientPhone"
-                   th:value="${clientPhone}"
-                   placeholder="+38 (0__) ___-__-__" oninput="formatPhone(this)" required>
-        </div>
+<main class="main">
 
-        <div class="form-group">
-            <label>Послуга</label>
-            <select name="serviceId" id="serviceSelect" onchange="filterMasters(); refreshSlots();" required>
-                <option value="" disabled th:selected="${selectedServiceId == null}">Оберіть процедуру</option>
-                <option th:each="s : ${services}"
-                        th:value="${s.id}"
-                        th:data-category="${s.category}"
-                        th:text="${s.title + ' — ' + s.price + ' грн'}"
-                        th:selected="${s.id == selectedServiceId}"></option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Майстер</label>
-            <select name="masterId" id="masterSelect" onchange="filterServices(); refreshSlots();" required>
-                <option value="" id="masterDefaultOption" disabled th:selected="${selectedMasterId == null}">Оберіть майстра</option>
-                <option th:each="m : ${masters}"
-                        th:value="${m.id}"
-                        th:data-spec="${m.specialization}"
-                        th:text="${m.name}"
-                        th:selected="${m.id == selectedMasterId}"></option>
-            </select>
-        </div>
-
-        <div class="row">
-            <div class="form-group">
-                <label>Дата</label>
-                <input type="date" name="date" id="dateInput" th:min="${minDate}" th:max="${maxDate}"
-                       th:value="${tempDate}" onchange="checkWeekend(); refreshSlots();" required>
-                <div id="dateError" class="error-msg">Вихідний день.</div>
+    <div class="topbar">
+        <div class="contact-info">
+            <div>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Київ, вул. Зої Бутенко, 6</span>
             </div>
+            <div>
+                <i class="fas fa-phone-alt"></i>
+                <span>+38 (067) 000-67-67</span>
+            </div>
+        </div>
+        <div class="topbar-links">
+            <a th:href="@{/services}">Послуги</a>
+            <a th:href="@{/masters}">Майстри</a>
+            <a th:href="@{/reviews}">Відгуки</a>
+        </div>
+    </div>
+
+    <div class="booking-card">
+        <h1 class="page-title" th:text="${rescheduleId != null ? 'Перенесення візиту' : 'Запис на візит'}">Запис на візит</h1>
+
+        <form th:action="@{/appointment/save}" method="post" onsubmit="return validateForm()">
+
+            <input type="hidden" name="rescheduleId" th:if="${rescheduleId != null}" th:value="${rescheduleId}">
+
+            <div class="warning-box" th:if="${warning == 'duplicate'}">
+                <p><i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i> Увага! У вас вже є запис на обраний час (<span th:text="${tempDate}"></span> о <span th:text="${tempTime}"></span>).</p>
+                <label class="checkbox-container">
+                    <input type="checkbox" name="forceSave" value="true">
+                    Так, я хочу додати ще одну процедуру на цей час
+                </label>
+            </div>
+
             <div class="form-group">
-                <label>Час</label>
-                <select name="time" id="timeSelect" required>
-                    <option th:if="${tempTime != null}" th:value="${tempTime}" th:text="${tempTime}" selected></option>
-                    <option th:if="${tempTime == null}" value="" disabled selected>-- : --</option>
+                <label>Ваше ім'я</label>
+                <input type="text" th:value="${clientName}" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label>Номер телефону</label>
+                <input type="tel" id="phoneInput" name="clientPhone"
+                       th:value="${clientPhone}"
+                       placeholder="+38 (0__) ___-__-__" oninput="formatPhone(this)" required>
+            </div>
+
+            <div class="form-group">
+                <label>Послуга</label>
+                <select name="serviceId" id="serviceSelect" onchange="filterMasters(); refreshSlots();" required>
+                    <option value="" disabled th:selected="${selectedServiceId == null}">Оберіть процедуру</option>
+                    <option th:each="s : ${services}"
+                            th:value="${s.id}"
+                            th:data-category="${s.category}"
+                            th:text="${s.title + ' — ' + s.price + ' ₴'}"
+                            th:selected="${s.id == selectedServiceId}"></option>
                 </select>
             </div>
-        </div>
 
-        <button type="submit" class="submit-btn" th:text="${rescheduleId != null ? 'Зберегти зміни' : 'Забронювати час'}">Забронювати</button>
+            <div class="form-group">
+                <label>Майстер</label>
+                <select name="masterId" id="masterSelect" onchange="filterServices(); refreshSlots();" required>
+                    <option value="" id="masterDefaultOption" disabled th:selected="${selectedMasterId == null}">Оберіть майстра</option>
+                    <option th:each="m : ${masters}"
+                            th:value="${m.id}"
+                            th:data-spec="${m.specialization}"
+                            th:text="${m.name}"
+                            th:selected="${m.id == selectedMasterId}"></option>
+                </select>
+            </div>
 
-        <a th:href="@{/profile}" class="back-link">
-            <i class="fas fa-arrow-left"></i> Назад до профілю
-        </a>
-    </form>
-</div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" name="date" id="dateInput" th:min="${minDate}" th:max="${maxDate}"
+                           th:value="${tempDate}" onchange="checkWeekend(); refreshSlots();" required>
+                    <div id="dateError" class="error-msg">Вибачте, це вихідний день.</div>
+                </div>
+                <div class="form-group">
+                    <label>Час</label>
+                    <select name="time" id="timeSelect" required>
+                        <option th:if="${tempTime != null}" th:value="${tempTime}" th:text="${tempTime}" selected></option>
+                        <option th:if="${tempTime == null}" value="" disabled selected>-- : --</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" th:text="${rescheduleId != null ? 'Зберегти зміни' : 'Забронювати час'}">Забронювати</button>
+
+        </form>
+    </div>
+
+</main>
 
 <script>
     function formatPhone(input) {
@@ -264,7 +412,6 @@
         });
     }
 
-    // Якщо клієнт обрав послугу -> фільтруємо майстрів
     function filterMasters() {
         const s = document.getElementById('serviceSelect'), m = document.getElementById('masterSelect');
         const sel = s.options[s.selectedIndex];
@@ -295,7 +442,6 @@
         document.getElementById('timeSelect').innerHTML = '<option value="" disabled selected>-- : --</option>';
     }
 
-    // НОВЕ: Якщо клієнт обрав майстра -> фільтруємо послуги
     function filterServices() {
         const s = document.getElementById('serviceSelect'), m = document.getElementById('masterSelect');
         const sel = m.options[m.selectedIndex];
@@ -307,7 +453,7 @@
         let matchFound = false;
 
         Array.from(s.options).forEach(o => {
-            if (o.value === "") return; // Ігноруємо "Оберіть процедуру"
+            if (o.value === "") return;
             if (o.getAttribute('data-category') === spec) {
                 o.style.display = "block";
                 if (!firstMatch) firstMatch = o.value;
@@ -317,7 +463,6 @@
             }
         });
 
-        // Якщо поточна послуга не підходить, ставимо першу доступну
         if (!matchFound && firstMatch) {
             s.value = firstMatch;
         } else if (!matchFound && !firstMatch) {
@@ -374,12 +519,10 @@
         return true;
     }
 
-    // НОВЕ: Розумне завантаження
     window.onload = function() {
         const sVal = document.getElementById('serviceSelect').value;
         const mVal = document.getElementById('masterSelect').value;
 
-        // Якщо ми прийшли від майстра, спочатку фільтруємо послуги!
         if (mVal) {
             filterServices();
         } else if (sVal) {

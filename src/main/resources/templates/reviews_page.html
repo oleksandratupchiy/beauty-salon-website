@@ -1,165 +1,359 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Відгуки | Beauty Salon</title>
+    <title>Відгуки | DUNYA BEAUTY</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root {
-            --soft-pink: #fce4ec;
-            --main-pink: #ef629f;
-            --soft-blue: #e3f2fd;
-            --bright-pink: #ff1493;
-            --verified-green: #2ecc71; /* ДОДАНО: Колір для підтверджених відгуків */
+            /* НАША ПАЛІТРА */
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --accent3: #323232;
+
+            --text: #323232;
+            --text-muted: #8E99A7;
+
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
+
+            --gold: #d4af37; /* Для зірочок */
+            --verified: #4a7c59; /* Приглушений зелений для підтверджених відгуків */
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, var(--soft-blue) 0%, var(--soft-pink) 100%);
-            margin: 0; min-height: 100vh; padding: 20px;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            color: var(--text);
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px; min-height: 100vh; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
+            padding: 36px 20px; position: sticky; top: 0; height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100; flex-shrink: 0;
+        }
+        .sidebar-logo {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700;
+            letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 36px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
+        .sidebar-profile {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 36px; gap: 8px;
+            text-decoration: none; padding: 15px 10px; border-radius: 20px; transition: all 0.3s ease;
+            border: 1px solid transparent; cursor: pointer;
+        }
+        .sidebar-profile:hover {
+            background: rgba(255, 255, 255, 0.6); border-color: var(--card-border);
+            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.15);
+        }
+        .avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.3); transition: transform 0.3s;
+        }
+        .sidebar-profile:hover .avatar { transform: scale(1.05); }
+        .profile-name { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; }
+        .profile-sub { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px;
+            color: var(--text-muted); font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+        .sidebar-social {
+            display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2);
+        }
+        .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
+        .sidebar-social a:hover { color: var(--accent); }
 
-        .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
-        .back-home { text-decoration: none; color: var(--main-pink); font-weight: 600; font-size: 15px; transition: 0.3s; }
-        .back-home:hover { color: var(--bright-pink); transform: translateX(-5px); }
-        h1 { text-align: center; color: #333; margin: 0; text-transform: uppercase; flex-grow: 1; margin-right: 100px; }
+        /* ── MAIN CONTENT ── */
+        .main {
+            flex: 1; overflow-y: auto; padding: 36px 40px; display: flex; flex-direction: column; gap: 32px;
+        }
 
-        .add-review-section { text-align: center; margin-bottom: 50px; }
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex; align-items: center; gap: 20px; justify-content: space-between;
+        }
+        .contact-info { display: flex; gap: 25px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .contact-info div { display: flex; align-items: center; gap: 8px; }
+        .contact-info i { color: var(--accent); }
+        .topbar-links { display: flex; gap: 28px; align-items: center; margin-left: auto; }
+        .topbar-links a {
+            text-decoration: none; color: var(--text-muted); font-size: 13px; font-weight: 500; transition: color 0.2s;
+        }
+        .topbar-links a:hover { color: var(--text); }
+        .btn-book-top {
+            display: inline-flex; align-items: center; gap: 8px; background: var(--text); color: #fff;
+            padding: 10px 22px; border-radius: 50px; font-size: 12px; font-weight: 600;
+            text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(117, 128, 156, 0.25);
+        }
+        .btn-book-top:hover {
+            background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117, 128, 156, 0.4);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.8rem; font-weight: 700;
+            color: var(--text); letter-spacing: -0.02em; margin: 0;
+        }
+
+        /* --- ФОРМА ВІДГУКУ --- */
         .add-review-btn {
-            background: #333; color: white; padding: 15px 40px; border: none;
-            border-radius: 30px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s;
+            background: transparent; color: var(--text); border: 1px solid rgba(142, 153, 167, 0.4);
+            padding: 12px 28px; border-radius: 50px; cursor: pointer; font-weight: 600;
+            font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: 0.3s;
         }
-        .add-review-btn:hover { background: var(--main-pink); transform: scale(1.05); }
+        .add-review-btn:hover {
+            background: var(--text); color: #fff; border-color: var(--text);
+            box-shadow: 0 6px 16px rgba(117, 128, 156, 0.2); transform: translateY(-2px);
+        }
 
         .form-container {
-            background: white; padding: 30px; border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1); display: none;
-            margin: 20px auto; text-align: left;
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+            padding: 35px; border-radius: var(--radius); box-shadow: var(--shadow);
+            display: none; margin-bottom: 30px; animation: fadeDown 0.3s ease;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         input, select, textarea {
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
-            outline: none; font-family: 'Montserrat', sans-serif;
+            width: 100%; padding: 14px; margin-bottom: 15px;
+            border: 1px solid rgba(142, 153, 167, 0.3); border-radius: 12px; box-sizing: border-box;
+            background: rgba(255,255,255,0.7); outline: none; font-family: 'Montserrat', sans-serif;
+            color: var(--text); font-size: 14px; transition: 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent); background: #fff;
         }
 
-        .rating-input { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 15px; }
+        .rating-input {
+            display: flex; flex-direction: row-reverse; justify-content: center;
+            margin-bottom: 25px; gap: 5px;
+        }
         .rating-input input { display: none; }
-        .rating-input label { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
-        .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--bright-pink); }
+        .rating-input label { font-size: 35px; color: rgba(142, 153, 167, 0.3); cursor: pointer; transition: 0.2s; }
+        .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: var(--gold); }
+
+        .btn-submit {
+            width: 100%; background: var(--text); color: white; padding: 15px; border: none;
+            border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s;
+            font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .btn-submit:hover { background: var(--accent); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
+
+        /* --- ВІДГУКИ --- */
+        .reviews-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
         .review-card {
-            background: rgba(255, 255, 255, 0.95); padding: 25px;
-            border-radius: 20px; margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            position: relative; /* ДОДАНО: Для позиціонування бейджа */
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+            padding: 30px; border-radius: var(--radius);
+            box-shadow: var(--shadow); position: relative;
+            animation: fadeUp 0.5s ease both;
         }
 
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .stars { color: var(--bright-pink); }
-        .date-label { font-size: 0.8em; color: #999; }
+        .review-card:nth-child(2) { animation-delay: 0.1s; }
+        .review-card:nth-child(3) { animation-delay: 0.2s; }
+        .review-card:nth-child(4) { animation-delay: 0.3s; }
 
-        .info-tags { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .stars { color: var(--gold); font-size: 14px; letter-spacing: 2px;}
+        .date-label { font-size: 12px; color: var(--text-muted); font-weight: 500;}
+
+        .info-tags { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .tag {
-            font-size: 0.75em;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-transform: uppercase;
+            font-size: 11px; padding: 6px 14px; border-radius: 50px; font-weight: 600;
+            border: 1px solid rgba(142, 153, 167, 0.2);
         }
-        .tag-master { background: #eee; color: #555; }
-        .tag-service { background: var(--soft-pink); color: var(--main-pink); }
+        .tag-master { background: rgba(255,255,255,0.6); color: var(--text-muted); }
+        .tag-service { background: rgba(117, 128, 156, 0.1); color: var(--accent); border-color: transparent;}
 
-        /* ДОДАНО: Стилі для бейджа підтвердження */
         .verified-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background-color: #e8f8f5;
-            color: var(--verified-green);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            border: 1px solid #c3e6cb;
+            display: inline-flex; align-items: center; gap: 5px;
+            background-color: rgba(74, 124, 89, 0.1); color: var(--verified);
+            padding: 6px 14px; border-radius: 50px; font-size: 11px; font-weight: 700;
+            border: 1px solid rgba(74, 124, 89, 0.2);
         }
 
-        .review-text { color: #444; line-height: 1.6; white-space: pre-line; font-size: 1.05em; }
-        .review-text::first-line { font-weight: 700; font-style: italic; color: #000; }
+        .review-text {
+            color: var(--text); line-height: 1.6; white-space: pre-line; font-size: 14px; font-weight: 500;
+        }
+        /* Це робить перший рядок (ім'я клієнта) жирним і виділеним, як було в тебе */
+        .review-text::first-line { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-top">
-        <a th:href="@{/}" class="back-home"><i class="fas fa-arrow-left"></i> На головну</a>
-        <h1> Відгуки клієнтів </h1>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>Dunya</span> Beauty</div>
+
+    <a th:href="@{/login}" class="sidebar-profile" sec:authorize="isAnonymous()">
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <div class="profile-name">Мій кабінет</div>
+        <div class="profile-sub">Увійти / Реєстрація</div>
+    </a>
+
+    <a th:href="@{/profile}" class="sidebar-profile" sec:authorize="isAuthenticated()">
+        <div class="avatar"><i class="fas fa-check"></i></div>
+        <div class="profile-name" th:text="${clientName != null ? clientName : 'Гість'}">Ім'я Клієнта</div>
+        <div class="profile-sub">Мій профіль</div>
+    </a>
+
+    <nav class="sidebar-nav">
+        <a th:href="@{/}" class="nav-item">
+            <i class="fas fa-home"></i> Головна
+        </a>
+        <a th:href="@{/services}" class="nav-item">
+            <i class="fas fa-spa"></i> Послуги
+        </a>
+        <a th:href="@{/masters}" class="nav-item">
+            <i class="fas fa-magic"></i> Майстри
+        </a>
+        <a th:href="@{/reviews}" class="nav-item active">
+            <i class="fas fa-comment-dots"></i> Відгуки
+        </a>
+        <a th:href="@{/appointment}" class="nav-item">
+            <i class="fas fa-calendar-check"></i> Записатись
+        </a>
+    </nav>
+
+    <div class="sidebar-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+    </div>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div class="contact-info">
+            <div>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Київ, вул. Зої Бутенко, 6</span>
+            </div>
+            <div>
+                <i class="fas fa-phone-alt"></i>
+                <span>+38 (067) 000-67-67</span>
+            </div>
+        </div>
+        <div class="topbar-links">
+            <a th:href="@{/services}">Послуги</a>
+            <a th:href="@{/masters}">Майстри</a>
+            <a th:href="@{/reviews}">Відгуки</a>
+        </div>
+        <a th:href="@{/appointment}" class="btn-book-top">
+            <i class="fas fa-calendar-plus"></i> Записатись
+        </a>
     </div>
 
-    <div class="add-review-section">
-        <button class="add-review-btn" onclick="toggleForm()"> ЛИШИТИ ВІДГУК </button>
+    <div class="header-content">
+        <h1 class="page-title">Відгуки клієнтів</h1>
+        <button class="add-review-btn" onclick="toggleForm()">
+            <i class="fas fa-pen" style="margin-right: 5px;"></i> Залишити відгук
+        </button>
+    </div>
 
-        <div id="reviewForm" class="form-container">
-            <form th:action="@{/reviews/add}" method="post">
-                <input type="text" name="clientName" placeholder="Ваше ім'я" required>
+    <div id="reviewForm" class="form-container">
+        <form th:action="@{/reviews/add}" method="post">
+            <input type="text" name="clientName" placeholder="Як до вас звертатись?" th:value="${clientName != null ? clientName : ''}" required>
 
-                <div class="form-grid">
-                    <select name="serviceType" id="serviceSelect" onchange="filterMasters()" required>
-                        <option value="" disabled selected>Оберіть послугу</option>
-                        <option value="nails">Манікюр & Педикюр</option>
-                        <option value="female_cut">Жіночі стрижки</option>
-                        <option value="male_cut">Чоловічі стрижки</option>
-                        <option value="makeup">Візаж</option>
-                        <option value="permanent">Перманент</option>
-                        <option value="cosmetician">Косметологія</option>
-                        <option value="lash_brows">Брови & Вії</option>
-                        <option value="colorist">Колористика</option>
-                    </select>
+            <div class="form-grid">
+                <select name="serviceType" id="serviceSelect" onchange="filterMasters()" required>
+                    <option value="" disabled selected>Оберіть послугу</option>
+                    <option value="nails">Манікюр & Педикюр</option>
+                    <option value="female_cut">Жіночі стрижки</option>
+                    <option value="male_cut">Чоловічі стрижки</option>
+                    <option value="makeup">Візаж</option>
+                    <option value="permanent">Перманент</option>
+                    <option value="cosmetician">Косметологія</option>
+                    <option value="lash_brows">Брови & Вії</option>
+                    <option value="colorist">Колористика</option>
+                </select>
 
-                    <select name="masterName" id="masterSelect" required disabled>
-                        <option value="" disabled selected>Спочатку послуга</option>
-                        <option th:each="m : ${masters}"
-                                th:value="${m.name}"
-                                th:text="${m.name}"
-                                th:attr="data-spec=${m.specialization}">
-                        </option>
-                    </select>
-                </div>
+                <select name="masterName" id="masterSelect" required disabled>
+                    <option value="" disabled selected>Спочатку послуга</option>
+                    <option th:each="m : ${masters}"
+                            th:value="${m.name}"
+                            th:text="${m.name}"
+                            th:attr="data-spec=${m.specialization}">
+                    </option>
+                </select>
+            </div>
 
-                <div class="rating-input">
-                    <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
-                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
-                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
-                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
-                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
-                </div>
+            <div class="rating-input">
+                <input type="radio" id="star5" name="rating" value="5" required/><label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+            </div>
 
-                <textarea name="text" rows="4" placeholder="Ваші враження..." required></textarea>
+            <textarea name="text" rows="4" placeholder="Поділіться вашими враженнями..." required></textarea>
 
-                <button type="submit" style="width: 100%; background: var(--main-pink); color: white; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">
-                    ОПУБЛІКУВАТИ
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="btn-submit">Опублікувати відгук</button>
+        </form>
     </div>
 
     <div class="reviews-feed">
         <div class="review-card" th:each="review : ${reviews}">
+
             <div class="review-header">
                 <div class="stars">
                     <th:block th:if="${review.rating != null}">
@@ -194,9 +388,11 @@
             </div>
 
             <div class="review-text" th:text="${review.text}"></div>
+
         </div>
     </div>
-</div>
+
+</main>
 
 <script>
     function toggleForm() {

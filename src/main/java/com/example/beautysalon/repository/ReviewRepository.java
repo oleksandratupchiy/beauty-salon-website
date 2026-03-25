@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findAllByOrderByIdDesc();
+
+    // ДОДАЛИ ЦЕЙ РЯДОК: бере тільки 3 останні
+    List<Review> findTop3ByOrderByIdDesc();
 }
