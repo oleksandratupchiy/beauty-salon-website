@@ -1,104 +1,272 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Порт даних | Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Порт даних | DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        :root { --pink: #ef629f; --dark: #333; --bg: #f8f9fa; --text-muted: #858796; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; display: flex; }
+        :root {
+            /* НАША ПАЛІТРА */
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --text: #323232;
+            --text-muted: #8E99A7;
+            --danger: #e74c3c;
+            --success: #4a7c59;
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
+        }
 
-        /* Sidebar Styles */
-        .sidebar { width: 260px; height: 100vh; background: var(--dark); color: white; padding: 25px; position: fixed; box-sizing: border-box; display: flex; flex-direction: column; }
-        .sidebar-header { margin-bottom: 40px; padding-left: 15px; }
-        .sidebar h2 { color: var(--pink); font-size: 1.4rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-        .sidebar-menu { flex-grow: 1; }
-        .sidebar a { display: flex; align-items: center; color: #bbb; text-decoration: none; padding: 15px; border-radius: 10px; transition: 0.3s; margin-bottom: 5px; }
-        .sidebar a:hover, .sidebar a.active { background: rgba(239, 98, 159, 0.1); color: var(--pink); }
-        .sidebar i { margin-right: 15px; width: 20px; text-align: center; font-size: 1.1rem; }
-        .sidebar-footer { margin-top: auto; border-top: 1px solid #444; padding-top: 15px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Main Content */
-        .main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; }
-        .header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0; }
-        .header h1 { margin: 0; font-size: 1.75rem; color: var(--dark); }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh; display: flex; color: var(--text);
+        }
 
-        /* Card Design */
-        .port-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 700px; }
-        .section { margin-bottom: 35px; padding-bottom: 25px; border-bottom: 1px dashed #eee; }
-        .section:last-child { border-bottom: none; }
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px; min-height: 100vh; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
+            padding: 36px 20px; position: fixed; top: 0; height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100;
+        }
 
-        .section h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .section p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+        .sidebar-logo {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700;
+            letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
+        .admin-badge {
+            font-size: 10px; background: var(--text); color: white; padding: 3px 8px;
+            border-radius: 5px; letter-spacing: 1px; margin-bottom: 40px; display: inline-block;
+            align-self: flex-start; margin-left: 28px;
+        }
 
-        /* Form & Buttons */
-        .file-input-wrapper { margin: 20px 0; }
-        input[type="file"] { background: #f1f3f9; padding: 15px; border-radius: 10px; width: 100%; box-sizing: border-box; border: 2px dashed #d1d3e2; cursor: pointer; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px;
+            color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 20px; text-align: center; font-size: 15px; }
 
-        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; transition: 0.3s; }
-        .btn-export { background: #4e73df; color: white; box-shadow: 0 4px 6px rgba(78, 115, 223, 0.2); }
-        .btn-import { background: #1cc88a; color: white; box-shadow: 0 4px 6px rgba(28, 200, 138, 0.2); }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(142, 153, 167, 0.2); padding-top: 15px; }
+        .nav-item.logout { color: var(--danger); }
+        .nav-item.logout:hover { background: rgba(231, 76, 60, 0.1); color: var(--danger); }
 
-        /* Errors & Success Alerts */
-        .alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: 240px; padding: 40px 50px; width: calc(100% - 240px); box-sizing: border-box;
+            display: flex; flex-direction: column; gap: 32px; align-items: flex-start;
+        }
+
+        .header-title h1 {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.2rem; margin: 0;
+            font-weight: 700; color: var(--text); letter-spacing: -0.02em;
+        }
+
+        /* ── PORT CARD ── */
+        .port-container {
+            width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+        }
+
+        .port-card {
+            background: var(--card-bg); backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border); padding: 40px;
+            border-radius: var(--radius); box-shadow: var(--shadow);
+            display: flex; flex-direction: column; gap: 20px;
+            animation: fadeUp 0.5s ease both;
+        }
+        .port-card:nth-child(2) { animation-delay: 0.15s; }
+
+        .card-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 10px;
+        }
+        .icon-export { background: rgba(117, 128, 156, 0.1); color: var(--accent); }
+        .icon-import { background: rgba(74, 124, 89, 0.1); color: var(--success); }
+
+        .port-card h3 {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.3rem; font-weight: 700;
+        }
+        .port-card p {
+            font-size: 13px; color: var(--text-muted); line-height: 1.6; font-weight: 500;
+            margin-bottom: 10px; flex-grow: 1;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 15px 25px; border-radius: 50px; text-decoration: none;
+            font-weight: 600; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.05em; border: none; cursor: pointer; transition: 0.3s;
+        }
+        .btn-export { background: var(--text); color: white; box-shadow: 0 4px 12px rgba(50,50,50,0.2); }
+        .btn-import { background: var(--success); color: white; box-shadow: 0 4px 12px rgba(74, 124, 89, 0.2); }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+        /* ── FILE INPUT ── */
+        .file-upload-zone {
+            position: relative; border: 2px dashed rgba(142, 153, 167, 0.3);
+            border-radius: 15px; padding: 20px; text-align: center;
+            transition: 0.3s; background: rgba(255,255,255,0.2);
+        }
+        .file-upload-zone:hover { border-color: var(--success); background: rgba(74, 124, 89, 0.05); }
+
+        input[type="file"] {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            opacity: 0; cursor: pointer;
+        }
+        .file-msg { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+        /* ── ALERTS & MODALS ── */
+        .alert {
+            width: 100%; max-width: 900px; padding: 16px 20px; border-radius: 15px;
+            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 10px; animation: fadeDown 0.3s ease;
+        }
+        .alert-error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.2); }
+        .alert-success { background: rgba(74, 124, 89, 0.1); color: var(--success); border: 1px solid rgba(74, 124, 89, 0.2); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 40px; border-radius: var(--radius); width: 100%; box-shadow: var(--shadow); position: relative; animation: fadeUp 0.3s ease; }
+        .btn-save { width: 100%; padding: 15px; border-radius: 50px; border: none; background: var(--text); color: white; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; }
+        .btn-save:hover { background: var(--accent); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .format-hint { font-size: 11px; color: var(--accent); background: rgba(117, 128, 156, 0.1); padding: 10px; border-radius: 10px; margin-top: 15px; display: block; line-height: 1.5; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-header">
-        <h2>Beauty Admin</h2>
+    <div style="display: flex; flex-direction: column;">
+        <div class="sidebar-logo"><span>Dunya</span></div>
+        <span class="admin-badge">ADMIN PANEL</span>
     </div>
-    <div class="sidebar-menu">
-        <a th:href="@{/admin/dashboard}"><i class="fas fa-chart-line"></i> Аналітика</a>
-        <a th:href="@{/admin/masters}"><i class="fas fa-user-tie"></i> Майстри</a>
-        <a th:href="@{/admin/services}"><i class="fas fa-spa"></i> Послуги</a>
-        <a th:href="@{/admin/appointments}"><i class="fas fa-calendar-check"></i> Записи</a>
-        <a th:href="@{/admin/port}" class="active"><i class="fas fa-file-import"></i> Порт даних</a>
+
+    <div class="sidebar-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-item"><i class="fas fa-chart-pie"></i> Аналітика</a>
+        <a th:href="@{/admin/masters}" class="nav-item"><i class="fas fa-user-tie"></i> Майстри</a>
+        <a th:href="@{/admin/services}" class="nav-item"><i class="fas fa-spa"></i> Послуги</a>
+        <a th:href="@{/admin/appointments}" class="nav-item"><i class="fas fa-calendar-check"></i> Всі записи</a>
+        <a th:href="@{/admin/port}" class="nav-item active"><i class="fas fa-file-import"></i> База даних</a>
     </div>
+
     <div class="sidebar-footer">
-        <a th:href="@{/logout}" style="color: #e74a3b;"><i class="fas fa-sign-out-alt"></i> Вихід</a>
+        <a th:href="@{/logout}" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Вийти</a>
     </div>
 </div>
 
-<div class="main">
-    <div class="header">
-        <h1>Керування даними (Excel)</h1>
+<main class="main">
+    <div class="header-title">
+        <h1>Керування даними</h1>
     </div>
 
     <div th:if="${param.error}" class="alert alert-error">
         <i class="fas fa-exclamation-triangle"></i>
-        <span th:if="${param.error[0] == 'empty'}">Файл порожній. Виберіть коректний файл Excel.</span>
-        <span th:if="${param.error[0] == 'parse'}">Помилка читання файлу. Перевірте формат таблиці.</span>
+        <span th:if="${param.error[0] == 'empty'}">Файл порожній. Будь ласка, виберіть коректний Excel файл.</span>
+        <span th:if="${param.error[0] == 'parse'}">Помилка читання. Перевірте структуру вашої таблиці або збережіть файл у форматі .xlsx.</span>
     </div>
 
-    <div class="port-card">
-        <div class="section">
-            <h3><i class="fas fa-download" style="color: #4e73df;"></i> Експорт даних</h3>
-            <p>Отримайте звіт у форматі Excel із записами на <strong>поточний місяць</strong>. Це дозволяє швидко переглянути активність та роздрукувати графік.</p>
+    <div th:if="${successCount != null}" class="alert alert-success">
+        <i class="fas fa-check-circle" style="font-size: 16px;"></i>
+        <span>Імпорт завершено! Успішно додано нових записів: <b th:text="${successCount}"></b>.</span>
+    </div>
+
+    <div class="port-container">
+        <div class="port-card">
+            <div class="card-icon icon-export"><i class="fas fa-file-export"></i></div>
+            <h3>Експорт у Excel</h3>
+            <p>Завантажте звіт про візити на <strong>поточний місяць</strong>. Файл містить 8 колонок з повною інформацією про клієнтів та записи.</p>
             <a th:href="@{/admin/port/export}" class="btn btn-export">
-                <i class="fas fa-file-excel"></i> Скачати поточний звіт
+                <i class="fas fa-download"></i> Скачати звіт
             </a>
+            <span class="format-hint">
+                💡 <b>Порада:</b> Завантажений файл можна використовувати як ідеальний шаблон для майбутнього імпорту нових записів.
+            </span>
         </div>
 
-        <div class="section">
-            <h3><i class="fas fa-upload" style="color: #1cc88a;"></i> Імпорт даних</h3>
-            <p>Ви можете масово додати нові записи, завантаживши Excel файл. Переконайтеся, що назви листів збігаються з назвами послуг у базі.</p>
+        <div class="port-card">
+            <div class="card-icon icon-import"><i class="fas fa-file-import"></i></div>
+            <h3>Імпорт записів</h3>
+            <p>Завантажте нові візити. Переконайтеся, що файл має 8 колонок: <i>Клієнт, Email, Телефон, Послуга, Тег, Майстер, Дата, Час</i>.</p>
 
             <form th:action="@{/admin/port/import}" method="post" enctype="multipart/form-data">
-                <div class="file-input-wrapper">
-                    <input type="file" name="file" accept=".xlsx" required>
+                <div class="file-upload-zone" id="dropZone">
+                    <input type="file" name="file" id="fileInput" accept=".xlsx" required onchange="updateFileName()">
+                    <div class="file-msg" id="fileNameDisplay">
+                        <i class="fas fa-cloud-upload-alt" style="display: block; font-size: 24px; margin-bottom: 10px;"></i>
+                        Натисніть або перетягніть файл .xlsx
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-import">
+                <button type="submit" class="btn btn-import" style="width: 100%; margin-top: 20px;">
                     <i class="fas fa-check-circle"></i> Розпочати імпорт
                 </button>
             </form>
         </div>
     </div>
+</main>
+
+<div th:if="${importErrors != null and not #lists.isEmpty(importErrors)}" class="modal-overlay" id="errorModal" style="display: flex;">
+    <div class="modal-content" style="max-width: 650px;">
+        <span style="position: absolute; top: 15px; right: 20px; cursor: pointer; color: var(--text-muted); font-size: 24px; transition: 0.2s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'" onclick="document.getElementById('errorModal').style.display='none'">&times;</span>
+
+        <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Звіт імпорту: Знайдено помилки</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+            Деякі рядки з вашого Excel-файлу не були завантажені, оскільки містили неточності або дублювали вже існуючі записи в розкладі:
+        </p>
+
+        <div style="max-height: 280px; overflow-y: auto; text-align: left; background: rgba(231, 76, 60, 0.05); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(231, 76, 60, 0.1);">
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                <li th:each="err : ${importErrors}" style="font-size: 12px; margin-bottom: 10px; color: var(--text); padding-bottom: 8px; border-bottom: 1px solid rgba(142, 153, 167, 0.15); line-height: 1.4;">
+                    <i class="fas fa-times" style="color: var(--danger); margin-right: 8px;"></i>
+                    <strong th:text="${#strings.substringBefore(err, ':')}">Рядок X</strong>:
+                    <span th:text="${#strings.substringAfter(err, ':')}">Текст помилки</span>
+                </li>
+            </ul>
+        </div>
+
+        <button class="btn-save" style="margin-top: 25px;" onclick="document.getElementById('errorModal').style.display='none'">
+            Зрозуміло, закрити звіт
+        </button>
+    </div>
 </div>
+
+<script>
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files.length > 0) {
+            display.innerHTML = `<i class="fas fa-file-excel" style="display: block; font-size: 24px; margin-bottom: 10px; color: #4a7c59;"></i> <strong style="color: var(--text);">${input.files[0].name}</strong>`;
+        }
+    }
+</script>
 
 </body>
 </html>

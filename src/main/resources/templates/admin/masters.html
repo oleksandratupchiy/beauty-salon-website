@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Керування майстрами | DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #dcdddd; --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6); --card-border: rgba(255,255,255,0.85);
+            --accent: #75809C; --accent2: #8E99A7; --text: #323232;
+            --text-muted: #8E99A7; --danger: #e74c3c; --success: #4a7c59; --shadow: 0 8px 32px rgba(117, 128, 156, 0.12); --radius: 22px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif; background: var(--bg);
+            background-image: radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%), radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh; display: flex; color: var(--text);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar { width: 240px; min-height: 100vh; background: var(--sidebar-bg); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column; padding: 36px 20px; position: fixed; top: 0; height: 100vh; box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100; }
+        .sidebar-logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .sidebar-logo span { color: var(--accent); }
+
+        .admin-badge { font-size: 10px; background: var(--text); color: white; padding: 3px 8px; border-radius: 5px; letter-spacing: 1px; margin-bottom: 40px; display: inline-block; align-self: flex-start; margin-left: 28px; }
+
+        .sidebar-nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1); }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 20px; text-align: center; }
+
+        .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(142, 153, 167, 0.2); padding-top: 15px; }
+        .nav-item.logout { color: var(--danger); }
+        .nav-item.logout:hover { background: rgba(231, 76, 60, 0.1); color: var(--danger); }
+
+        .main { margin-left: 240px; padding: 40px 50px; width: calc(100% - 240px); display: flex; flex-direction: column; gap: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.2rem; font-weight: 700; }
+        .btn-add { background: var(--text); color: white; padding: 12px 24px; border-radius: 50px; border: none; font-family: 'Montserrat'; font-weight: 600; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-add:hover { background: var(--accent); transform: translateY(-2px); }
+
+        /* ── ALERTS ── */
+        .alert { padding: 16px 20px; border-radius: 15px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: fadeDown 0.3s ease; }
+        .alert-error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.2); }
+        .alert-success { background: rgba(74, 124, 89, 0.1); color: var(--success); border: 1px solid rgba(74, 124, 89, 0.2); }
+
+        /* ── КАРУСЕЛЬ-ФІЛЬТР ── */
+        .category-carousel { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .category-carousel::-webkit-scrollbar { display: none; }
+        .filter-pill { background: rgba(255,255,255,0.4); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 50px; white-space: nowrap; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; color: var(--text-muted); text-transform: uppercase; }
+        .filter-pill:hover, .filter-pill.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 4px 12px rgba(117, 128, 156, 0.2); }
+
+        /* ── TABLE ── */
+        .table-container { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(255,255,255,0.4); padding: 18px 25px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        td { padding: 15px 25px; border-bottom: 1px solid rgba(142, 153, 167, 0.1); vertical-align: middle; font-size: 14px; font-weight: 500; }
+        tr:hover { background: rgba(255,255,255,0.3); }
+
+        .master-name { display: flex; align-items: center; gap: 12px; font-weight: 700; }
+        .mini-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent2); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .rating { color: #8da9c4; font-weight: 700; font-size: 12px; }
+        .newbie { color: var(--text-muted); font-style: italic; font-weight: 500; font-size: 12px; }
+
+        .actions { display: flex; gap: 10px; justify-content: center; }
+        .btn-icon { width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(142, 153, 167, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--text-muted); background: white; text-decoration: none;}
+        .btn-icon:hover { color: var(--accent); border-color: var(--accent); }
+        .btn-del:hover { color: var(--danger); border-color: var(--danger); }
+
+        /* ── MODAL ── */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 40px; border-radius: var(--radius); width: 100%; max-width: 450px; box-shadow: var(--shadow); position: relative; }
+        .modal-content h3 { font-family: 'Bricolage Grotesque'; margin-bottom: 25px; font-size: 1.5rem; text-align: center; }
+        label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #ddd; font-family: 'Montserrat'; outline: none; }
+        .btn-save { width: 100%; padding: 15px; border-radius: 50px; border: none; background: var(--text); color: white; font-weight: 600; cursor: pointer; text-transform: uppercase; }
+
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden-row { display: none; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>Dunya</span></div>
+    <span class="admin-badge">ADMIN PANEL</span>
+    <div class="sidebar-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-item"><i class="fas fa-chart-pie"></i> Аналітика</a>
+        <a th:href="@{/admin/masters}" class="nav-item active"><i class="fas fa-user-tie"></i> Майстри</a>
+        <a th:href="@{/admin/services}" class="nav-item"><i class="fas fa-spa"></i> Послуги</a>
+        <a th:href="@{/admin/appointments}" class="nav-item"><i class="fas fa-calendar-check"></i> Всі записи</a>
+        <a th:href="@{/admin/port}" class="nav-item"><i class="fas fa-file-import"></i> База даних</a>
+    </div>
+
+    <div class="sidebar-footer">
+        <a th:href="@{/logout}" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Вийти</a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="header">
+        <h1>Наша команда</h1>
+        <button class="btn-add" onclick="showAddModal()">+ Додати майстра</button>
+    </div>
+
+    <div th:if="${errorMsg}" class="alert alert-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:text="${errorMsg}">Помилка</span>
+    </div>
+    <div th:if="${successMsg}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMsg}">Успішно</span>
+    </div>
+
+    <div class="category-carousel">
+        <div class="filter-pill active" onclick="filterMasters('all', this)">Всі майстри</div>
+        <div class="filter-pill" onclick="filterMasters('nails', this)">Манікюр</div>
+        <div class="filter-pill" onclick="filterMasters('female_cut', this)">Жін. стрижки</div>
+        <div class="filter-pill" onclick="filterMasters('male_cut', this)">Чол. стрижки</div>
+        <div class="filter-pill" onclick="filterMasters('makeup', this)">Візаж</div>
+        <div class="filter-pill" onclick="filterMasters('permanent', this)">Перманент</div>
+        <div class="filter-pill" onclick="filterMasters('cosmetician', this)">Косметологія</div>
+        <div class="filter-pill" onclick="filterMasters('lash_brows', this)">Брови & Вії</div>
+        <div class="filter-pill" onclick="filterMasters('colorist', this)">Колористика</div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Спеціаліст</th>
+                <th>Спеціалізація</th>
+                <th>Рейтинг</th>
+                <th style="text-align: center;">Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${masters}" th:data-category="${m.specialization}" class="master-row">
+                <td>
+                    <div class="master-name">
+                        <div class="mini-avatar" th:text="${#strings.substring(m.name,0,1)}">М</div>
+                        <span th:text="${m.name}">Ім'я</span>
+                    </div>
+                </td>
+                <td>
+                    <span th:text="${m.specialization}" style="color: var(--text-muted); font-size: 12px; font-weight: 600;">Спец</span>
+                </td>
+                <td>
+                    <span th:if="${m.rating != null and m.rating > 0}" class="rating">
+                        <i class="fas fa-star"></i> <span th:text="${m.rating}">5.0</span>
+                    </span>
+                    <span th:unless="${m.rating != null and m.rating > 0}" class="newbie">
+                        Майстер-новачок
+                    </span>
+                </td>
+                <td class="actions">
+                    <button class="btn-icon"
+                            th:data-id="${m.id}"
+                            th:data-name="${m.name}"
+                            th:data-spec="${m.specialization}"
+                            onclick="showEditModal(this)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <a th:href="@{/admin/masters/delete/{id}(id=${m.id})}" class="btn-icon btn-del" onclick="return confirm('Видалити майстра?')">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal-overlay" id="masterModal">
+    <div class="modal-content">
+        <span style="position: absolute; top: 15px; right: 20px; cursor: pointer;" onclick="hideModal()">&times;</span>
+        <h3 id="modalTitle">Майстер</h3>
+        <form th:action="@{/admin/masters/save}" method="post">
+            <input type="hidden" name="id" id="formId">
+
+            <label>Повне ім'я</label>
+            <input type="text" name="name" id="formName" required>
+
+            <label>Спеціалізація (Тег)</label>
+            <select name="specialization" id="formSpec" required>
+                <option value="nails">nails (Манікюр)</option>
+                <option value="female_cut">female_cut (Жін. стрижки)</option>
+                <option value="male_cut">male_cut (Чол. стрижки)</option>
+                <option value="makeup">makeup (Візаж)</option>
+                <option value="permanent">permanent (Перманент)</option>
+                <option value="cosmetician">cosmetician (Косметологія)</option>
+                <option value="lash_brows">lash_brows (Брови & Вії)</option>
+                <option value="colorist">colorist (Колористика)</option>
+            </select>
+
+            <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: -10px; margin-bottom: 20px;">
+                * Рейтинг розраховується автоматично на основі відгуків клієнтів.
+            </p>
+
+            <button type="submit" class="btn-save">Зберегти дані</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('masterModal');
+
+    function filterMasters(category, pill) {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        const rows = document.querySelectorAll('.master-row');
+        rows.forEach(row => {
+            if (category === 'all' || row.getAttribute('data-category') === category) {
+                row.classList.remove('hidden-row');
+            } else {
+                row.classList.add('hidden-row');
+            }
+        });
+    }
+
+    function showAddModal() {
+        document.getElementById('formId').value = '';
+        document.getElementById('formName').value = '';
+        document.getElementById('formSpec').selectedIndex = 0;
+        document.getElementById('modalTitle').innerText = 'Новий майстер';
+        modal.style.display = 'flex';
+    }
+
+    function showEditModal(btn) {
+        document.getElementById('formId').value = btn.getAttribute('data-id');
+        document.getElementById('formName').value = btn.getAttribute('data-name');
+        document.getElementById('formSpec').value = btn.getAttribute('data-spec');
+        document.getElementById('modalTitle').innerText = 'Редагувати майстра';
+        modal.style.display = 'flex';
+    }
+
+    function hideModal() { modal.style.display = 'none'; }
+    window.onclick = function(e) { if(e.target == modal) hideModal(); }
+</script>
+
+</body>
+</html>

@@ -36,8 +36,10 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // ДОДАНО "/images/**", щоб картинки вантажились для всіх без авторизації
-                        .requestMatchers("/", "/index", "/services", "/masters", "/reviews", "/register", "/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        // ДОДАНО ВСІ ШЛЯХИ ДЛЯ ПІДТВЕРДЖЕННЯ ТА ВІДНОВЛЕННЯ ПАРОЛЯ
+                        .requestMatchers("/", "/index", "/services", "/masters", "/reviews",
+                                "/register", "/login", "/verify", "/forgot-password",
+                                "/reset-password", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

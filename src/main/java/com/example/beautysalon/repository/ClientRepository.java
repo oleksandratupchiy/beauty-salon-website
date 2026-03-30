@@ -7,4 +7,8 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByEmail(String email);
     Optional<Client> findByName(String name);
+
+    // --- НОВІ МЕТОДИ ДЛЯ ПОШТИ ТА ПАРОЛЯ ---
+    Optional<Client> findByVerificationCode(String verificationCode);
+    Optional<Client> findByResetPasswordToken(String token);
 }

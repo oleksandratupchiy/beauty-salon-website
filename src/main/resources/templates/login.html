@@ -13,7 +13,7 @@
 
     <style>
         :root {
-        var(--bg): #dcdddd;
+            --bg: #dcdddd;
             --card-bg: rgba(255,255,255,0.6);
             --card-border: rgba(255,255,255,0.85);
             --sidebar-bg: rgba(255,255,255,0.55);
@@ -23,6 +23,7 @@
             --text: #323232;
             --text-muted: #8E99A7;
             --danger: #e74c3c;
+            --warning: #d35400; /* Додано для жовтих алертів */
 
             --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
             --radius: 22px;
@@ -87,12 +88,6 @@
         .nav-item.active { color: var(--accent); }
         .nav-item i { width: 18px; text-align: center; font-size: 14px; }
 
-        .sidebar-social {
-            display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2);
-        }
-        .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
-        .sidebar-social a:hover { color: var(--accent); }
-
         /* ── MAIN CONTENT ── */
         .main {
             flex: 1; overflow-y: auto; padding: 36px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px;
@@ -121,7 +116,7 @@
             position: relative;
             width: 100%;
             max-width: 400px;
-            margin: auto; /* Центрує картку у main */
+            margin: auto;
         }
 
         .auth-card {
@@ -145,13 +140,33 @@
 
         h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.4rem; margin-bottom: 25px; font-weight: 600; color: var(--text); }
 
+        /* Контейнер для поля пароля з іконкою */
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
         input {
             width: 100%; padding: 15px; margin-bottom: 15px;
             border: 1px solid rgba(142, 153, 167, 0.3); border-radius: 12px; box-sizing: border-box;
             background: rgba(255,255,255,0.7); outline: none; font-family: 'Montserrat', sans-serif;
             color: var(--text); font-size: 14px; transition: 0.3s;
         }
+        .input-group input { margin-bottom: 0; padding-right: 45px; } /* Місце под іконку */
         input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 4px 15px rgba(117, 128, 156, 0.1); }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .toggle-password:hover { color: var(--text); }
 
         .btn-auth {
             width: 100%; background: var(--text); color: white; padding: 15px;
@@ -165,12 +180,17 @@
         .switch-text a { color: var(--accent); text-decoration: none; font-weight: 700; transition: 0.2s; border-bottom: 1px solid transparent; }
         .switch-text a:hover { color: var(--text); border-color: var(--text); }
 
-        .error, .success {
+        .forgot-password { display: block; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; transition: 0.2s; }
+        .forgot-password:hover { color: var(--danger); }
+
+        /* Стилі для повідомлень */
+        .alert {
             font-size: 12px; font-weight: 600; padding: 12px; border-radius: 12px; margin-bottom: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px; text-align: left; line-height: 1.4;
         }
         .error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.2); }
         .success { background: rgba(117, 128, 156, 0.1); color: var(--accent); border: 1px solid rgba(117, 128, 156, 0.2); }
+        .warning { background: rgba(211, 84, 0, 0.1); color: var(--warning); border: 1px solid rgba(211, 84, 0, 0.2); }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -217,19 +237,58 @@
             <div class="logo"><span>Dunya</span> Beauty</div>
             <h2>Вхід до кабінету</h2>
 
-            <div th:if="${param.error}" class="error"><i class="fas fa-exclamation-circle"></i> Невірний логін або пароль</div>
-            <div th:if="${param.logout}" class="success"><i class="fas fa-check-circle"></i> Ви успішно вийшли з акаунта</div>
+            <div th:if="${param.error}" class="alert error">
+                <i class="fas fa-exclamation-circle"></i> Невірний логін, пароль, або ваш акаунт ще не активовано.
+            </div>
+            <div th:if="${param.logout}" class="alert success">
+                <i class="fas fa-check-circle"></i> Ви успішно вийшли з акаунта
+            </div>
+
+            <div th:if="${param.check_email}" class="alert warning">
+                <i class="fas fa-envelope-open-text"></i> Реєстрація майже завершена! Ми відправили посилання для активації на вашу пошту.
+            </div>
+            <div th:if="${param.verified}" class="alert success">
+                <i class="fas fa-check-circle"></i> Пошту успішно підтверджено! Тепер ви можете увійти.
+            </div>
+            <div th:if="${param.invalid_code}" class="alert error">
+                <i class="fas fa-times-circle"></i> Невірний або застарілий код підтвердження.
+            </div>
 
             <form th:action="@{/login}" method="post">
                 <input type="email" name="username" placeholder="Логін (Email)" required>
-                <input type="password" name="password" placeholder="Пароль" required>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder="Пароль" required>
+                    <i class="fas fa-eye toggle-password" id="togglePasswordBtn" onclick="togglePassword()"></i>
+                </div>
+
                 <button type="submit" class="btn-auth">Увійти</button>
             </form>
+
+            <a th:href="@{/forgot-password}" class="forgot-password">Забули пароль?</a>
 
             <div class="switch-text">Вперше у нас? <a th:href="@{/register}">Створити акаунт</a></div>
         </div>
     </div>
 </main>
+
+<script>
+    // Скрипт для показу/сховання пароля
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const icon = document.getElementById('togglePasswordBtn');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
 
 </body>
 </html>

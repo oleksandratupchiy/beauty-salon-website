@@ -2,8 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Панель Адміністратора | Beauty Salon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель Адміністратора | DUNYA BEAUTY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -13,27 +17,42 @@
 
         function drawCharts() {
             try {
-                // Читаємо дані з прихованих блоків (це найбезпечніший спосіб)
                 var chartDataRaw = document.getElementById('rawChartData').textContent;
                 var masterDataRaw = document.getElementById('rawMasterData').textContent;
 
                 var data1 = google.visualization.arrayToDataTable(JSON.parse(chartDataRaw));
                 var options1 = {
-                    title: 'Популярність послуг (кількість записів)',
-                    pieHole: 0.4,
-                    height: 450,
-                    chartArea: {width: '90%', height: '80%'},
-                    colors: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+                    backgroundColor: 'transparent', // Прозорий фон для скла
+                    pieHole: 0.45,
+                    height: 350,
+                    chartArea: {width: '90%', height: '85%'},
+                    // ОНОВЛЕНО: Твоя нова стильна палітра з 8 кольорів!
+                    colors: ['#fed8ab', '#8a7af7', '#4aedfe', '#5af7ae', '#e472d2', '#cdff30', '#000181', '#7c0116'],
+                    legend: {
+                        position: 'right',
+                        textStyle: { color: '#323232', fontName: 'Montserrat', fontSize: 13 }
+                    },
+                    pieSliceTextStyle: { fontName: 'Montserrat', fontSize: 12 }
                 };
                 new google.visualization.PieChart(document.getElementById('chart_pop')).draw(data1, options1);
 
                 var data2 = google.visualization.arrayToDataTable(JSON.parse(masterDataRaw));
                 var options2 = {
-                    title: 'Рейтинг майстрів (від найкращого)',
+                    backgroundColor: 'transparent',
                     legend: 'none',
-                    vAxis: {minValue: 0, maxValue: 5},
-                    height: 450,
-                    chartArea: {width: '80%', height: '70%'}
+                    height: 350,
+                    chartArea: {width: '85%', height: '75%'},
+                    colors: ['#75809C'],
+                    hAxis: {
+                        textStyle: { color: '#323232', fontName: 'Montserrat', fontSize: 12 }
+                    },
+                    vAxis: {
+                        minValue: 0, maxValue: 5,
+                        textStyle: { color: '#8E99A7', fontName: 'Montserrat', fontSize: 12 },
+                        gridlines: { color: 'rgba(142, 153, 167, 0.2)' },
+                        baselineColor: 'rgba(142, 153, 167, 0.4)'
+                    },
+                    animation: { startup: true, duration: 1000, easing: 'out' }
                 };
                 new google.visualization.ColumnChart(document.getElementById('chart_masters')).draw(data2, options2);
             } catch (error) {
@@ -43,42 +62,133 @@
     </script>
 
     <style>
-        :root { --pink: #ef629f; --dark: #333; --bg: #f8f9fa; --text-muted: #858796; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; display: flex; }
+        :root {
+            /* НАША ПАЛІТРА */
+            --bg: #dcdddd;
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
 
-        .sidebar { width: 260px; height: 100vh; background: var(--dark); color: white; padding: 25px; position: fixed; box-sizing: border-box; display: flex; flex-direction: column; }
-        .sidebar-header { margin-bottom: 40px; padding-left: 15px; }
-        .sidebar h2 { color: var(--pink); font-size: 1.4rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --text: #323232;
+            --text-muted: #8E99A7;
+            --danger: #e74c3c;
 
-        .sidebar-menu { flex-grow: 1; }
-        .sidebar a { display: flex; align-items: center; color: #bbb; text-decoration: none; padding: 15px; border-radius: 10px; transition: 0.3s; margin-bottom: 5px; }
-        .sidebar a:hover, .sidebar a.active { background: rgba(239, 98, 159, 0.1); color: var(--pink); }
-        .sidebar i { margin-right: 15px; width: 20px; text-align: center; font-size: 1.1rem; }
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
+        }
 
-        .sidebar-footer { margin-top: auto; border-top: 1px solid #444; padding-top: 15px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .main { margin-left: 260px; padding: 40px; width: calc(100% - 280px); box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0; }
-        .header h1 { margin: 0; font-size: 1.75rem; color: var(--dark); }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(ellipse at 0% 0%, rgba(117, 128, 156, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 100% 100%, rgba(50, 50, 50, 0.12) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 20%, rgba(142, 153, 167, 0.2) 0%, transparent 40%);
+            min-height: 100vh; display: flex; color: var(--text);
+        }
 
-        .welcome-msg { color: var(--text-muted); font-size: 1rem; font-weight: 400; }
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px; min-height: 100vh; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
+            padding: 36px 20px; position: fixed; top: 0; height: 100vh;
+            box-shadow: 2px 0 24px rgba(117, 128, 156, 0.05); z-index: 100;
+        }
 
-        .header-actions { display: flex; gap: 10px; }
-        .btn-common { padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-port { background: #4e73df; color: white; }
-        .btn-common:hover { transform: translateY(-2px); opacity: 0.9; }
+        .sidebar-logo {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700;
+            letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; margin-bottom: 5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-logo span { color: var(--accent); }
+        .admin-badge {
+            font-size: 10px; background: var(--text); color: white; padding: 3px 8px;
+            border-radius: 5px; letter-spacing: 1px; margin-bottom: 40px; display: inline-block;
+            align-self: flex-start; margin-left: 28px;
+        }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 40px; }
-        .stat-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; border-left: 5px solid transparent; transition: 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-card h3 { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; }
-        .stat-card p { font-size: 2.5rem; font-weight: 700; color: var(--dark); margin: 0; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px;
+            color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1);
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 20px; text-align: center; font-size: 15px; }
 
-        .card-services { border-left-color: #4e73df; }
-        .card-masters { border-left-color: #1cc88a; }
-        .card-appointments { border-left-color: #f6c23e; }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(142, 153, 167, 0.2); padding-top: 15px; }
+        .nav-item.logout { color: var(--danger); }
+        .nav-item.logout:hover { background: rgba(231, 76, 60, 0.1); color: var(--danger); }
 
-        .chart-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 30px; }
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: 240px; padding: 40px 50px; width: calc(100% - 240px); box-sizing: border-box;
+            display: flex; flex-direction: column; gap: 30px;
+        }
+
+        /* ── TOP BAR ── */
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header-title h1 {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.2rem; margin: 0 0 5px 0;
+            font-weight: 700; color: var(--text); letter-spacing: -0.02em;
+        }
+        .welcome-msg { color: var(--text-muted); font-size: 13px; font-weight: 500; }
+
+        .btn-solid {
+            background: var(--text); color: white; padding: 12px 24px;
+            border: none; border-radius: 50px; cursor: pointer; font-weight: 600;
+            font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: 0.3s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(50,50,50,0.2);
+        }
+        .btn-solid:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
+
+        /* ── STATS GRID ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+
+        .stat-card {
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+            padding: 25px 30px; border-radius: var(--radius); box-shadow: var(--shadow);
+            display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+            animation: fadeUp 0.4s ease both;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(117, 128, 156, 0.15); }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+
+        .stat-info h3 { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0; font-weight: 600; }
+        .stat-info p { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--text); margin: 0; line-height: 1; }
+        .stat-icon {
+            width: 60px; height: 60px; border-radius: 16px; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; color: var(--accent); background: linear-gradient(135deg, rgba(117, 128, 156, 0.15), rgba(50, 50, 50, 0.05));
+        }
+
+        /* ── CHARTS ── */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+
+        .chart-box {
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+            padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow);
+            animation: fadeUp 0.5s ease both; animation-delay: 0.3s;
+        }
+        .chart-title {
+            font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 600;
+            color: var(--text); margin: 0 0 20px 0; border-bottom: 1px solid rgba(142, 153, 167, 0.2); padding-bottom: 15px;
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Адаптивність для менших екранів */
+        @media (max-width: 1100px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -87,43 +197,68 @@
 <div id="rawMasterData" style="display: none;" th:utext="${masterData}"></div>
 
 <div class="sidebar">
-    <div class="sidebar-header">
-        <h2>Beauty Admin</h2>
+    <div style="display: flex; flex-direction: column;">
+        <div class="sidebar-logo"> <span>Dunya</span></div>
+        <span class="admin-badge">ADMIN PANEL</span>
     </div>
-    <div class="sidebar-menu">
-        <a th:href="@{/admin/dashboard}" class="active"><i class="fas fa-chart-line"></i> Аналітика</a>
-        <a th:href="@{/admin/masters}"><i class="fas fa-user-tie"></i> Майстри</a>
-        <a th:href="@{/admin/services}"><i class="fas fa-spa"></i> Послуги</a>
-        <a th:href="@{/admin/appointments}"><i class="fas fa-calendar-check"></i> Записи</a>
-        <a th:href="@{/admin/port}"><i class="fas fa-file-import"></i> Порт даних</a>
+
+    <div class="sidebar-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-item active"><i class="fas fa-chart-pie"></i> Аналітика</a>
+        <a th:href="@{/admin/masters}" class="nav-item"><i class="fas fa-user-tie"></i> Майстри</a>
+        <a th:href="@{/admin/services}" class="nav-item"><i class="fas fa-spa"></i> Послуги</a>
+        <a th:href="@{/admin/appointments}" class="nav-item"><i class="fas fa-calendar-check"></i> Всі записи</a>
+        <a th:href="@{/admin/port}" class="nav-item"><i class="fas fa-file-import"></i> База даних</a>
     </div>
+
     <div class="sidebar-footer">
-        <a th:href="@{/logout}" style="color: #e74a3b;"><i class="fas fa-sign-out-alt"></i> Вихід</a>
+        <a th:href="@{/logout}" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Вийти</a>
     </div>
 </div>
 
 <div class="main">
     <div class="header">
-        <div>
+        <div class="header-title">
             <h1>Аналітика салону</h1>
-            <div class="welcome-msg" th:text="${welcomeMessage}">Вітаємо!</div>
+            <div class="welcome-msg" th:text="${welcomeMessage}">Вітаємо в панелі управління!</div>
         </div>
         <div class="header-actions">
-            <a th:href="@{/admin/port}" class="btn-common btn-port"><i class="fas fa-exchange-alt"></i> Імпорт/Експорт</a>
+            <a th:href="@{/admin/port}" class="btn-solid"><i class="fas fa-download"></i> Імпорт / Експорт</a>
         </div>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card card-services"><h3>Послуг</h3><p th:text="${servicesCount}">0</p></div>
-        <div class="stat-card card-masters"><h3>Майстрів</h3><p th:text="${mastersCount}">0</p></div>
-        <div class="stat-card card-appointments"><h3>Записів</h3><p th:text="${appointmentsCount}">0</p></div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Активних послуг</h3>
+                <p th:text="${servicesCount}">0</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Майстрів у штаті</h3>
+                <p th:text="${mastersCount}">0</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Всього записів</h3>
+                <p th:text="${appointmentsCount}">0</p>
+            </div>
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+        </div>
     </div>
 
-    <div class="chart-box">
-        <div id="chart_pop"></div>
-    </div>
-    <div class="chart-box">
-        <div id="chart_masters"></div>
+    <div class="charts-grid">
+        <div class="chart-box">
+            <h3 class="chart-title">Популярність за категоріями</h3>
+            <div id="chart_pop"></div>
+        </div>
+        <div class="chart-box">
+            <h3 class="chart-title">Середній рейтинг майстрів</h3>
+            <div id="chart_masters"></div>
+        </div>
     </div>
 </div>
 

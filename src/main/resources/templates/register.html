@@ -12,11 +12,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* Точнісінько такі ж стилі як у login.html */
         :root {
-        var(--bg): #dcdddd; --card-bg: rgba(255,255,255,0.6); --card-border: rgba(255,255,255,0.85);
-            --sidebar-bg: rgba(255,255,255,0.55); --accent: #75809C; --accent2: #8E99A7;
-            --text: #323232; --text-muted: #8E99A7; --danger: #e74c3c; --shadow: 0 8px 32px rgba(117, 128, 156, 0.12); --radius: 22px;
+            --bg: #dcdddd;
+            --card-bg: rgba(255,255,255,0.6);
+            --card-border: rgba(255,255,255,0.85);
+            --sidebar-bg: rgba(255,255,255,0.55);
+            --accent: #75809C;
+            --accent2: #8E99A7;
+            --text: #323232;
+            --text-muted: #8E99A7;
+            --danger: #e74c3c;
+            --shadow: 0 8px 32px rgba(117, 128, 156, 0.12);
+            --radius: 22px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -38,9 +45,6 @@
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.75); color: var(--text); box-shadow: 0 2px 12px rgba(117, 128, 156, 0.1); }
         .nav-item.active { color: var(--accent); }
         .nav-item i { width: 18px; text-align: center; font-size: 14px; }
-        .sidebar-social { display: flex; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(142, 153, 167, 0.2); }
-        .sidebar-social a { color: var(--text-muted); font-size: 15px; transition: color 0.2s; text-decoration: none; }
-        .sidebar-social a:hover { color: var(--accent); }
 
         .main { flex: 1; overflow-y: auto; padding: 36px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
         .topbar { display: flex; align-items: center; gap: 20px; justify-content: space-between; width: 100%; }
@@ -55,17 +59,30 @@
 
         .auth-wrapper { position: relative; width: 100%; max-width: 400px; margin: auto; }
         .auth-card { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border); padding: 45px 40px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; animation: fadeUp 0.5s ease both; }
-        .logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 25px; display: center; justify-content: center; align-items: center; gap: 8px; }
         .logo span { color: var(--accent); }
         h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.4rem; margin-bottom: 25px; font-weight: 600; }
+
+        .input-group { position: relative; width: 100%; margin-bottom: 15px; }
+        .input-group input { margin-bottom: 0; padding-right: 45px; }
+        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); font-size: 16px; transition: color 0.3s; }
+        .toggle-password:hover { color: var(--text); }
+
         input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(142, 153, 167, 0.3); border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.7); outline: none; font-family: 'Montserrat', sans-serif; color: var(--text); font-size: 14px; transition: 0.3s; }
         input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 4px 15px rgba(117, 128, 156, 0.1); }
+
         .btn-auth { width: 100%; background: var(--text); color: white; padding: 15px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; margin-top: 10px; box-shadow: 0 4px 12px rgba(50,50,50,0.2); }
-        .btn-auth:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
+        .btn-auth:hover:not(:disabled) { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(117,128,156,0.3); }
+        .btn-auth:disabled { opacity: 0.5; cursor: not-allowed; background: #999; }
+
         .switch-text { margin-top: 25px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
         .switch-text a { color: var(--accent); text-decoration: none; font-weight: 700; transition: 0.2s; border-bottom: 1px solid transparent; }
         .switch-text a:hover { color: var(--text); border-color: var(--text); }
-        .error { font-size: 12px; font-weight: 600; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(231, 76, 60, 0.1); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.2); }
+
+        .alert { font-size: 12px; font-weight: 600; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: left; line-height: 1.4; }
+        .error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.2); }
+
+        #match-msg { font-size: 11px; font-weight: 700; margin-bottom: 15px; text-align: left; padding-left: 5px; display: none; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -112,19 +129,77 @@
             <div class="logo"><span>Dunya</span> Beauty</div>
             <h2>Створення акаунту</h2>
 
-            <div th:if="${error}" class="error"><i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Помилка</span></div>
+            <div th:if="${param.email_exists}" class="alert error">
+                <i class="fas fa-exclamation-circle"></i> Користувач з такою поштою вже існує.
+            </div>
 
-            <form th:action="@{/register}" method="post">
+            <div th:if="${param.short_password}" class="alert error">
+                <i class="fas fa-exclamation-circle"></i> Пароль має містити щонайменше 8 символів.
+            </div>
+
+            <form th:action="@{/register}" method="post" id="regForm">
                 <input type="text" name="name" placeholder="Як до вас звертатись?" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Пароль" required>
-                <button type="submit" class="btn-auth">Зареєструватися</button>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder="Пароль (мін. 8 символів)" required minlength="8">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="confirmPassword" placeholder="Підтвердіть пароль" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+                </div>
+
+                <p id="match-msg"></p>
+
+                <button type="submit" class="btn-auth" id="submitBtn">Зареєструватися</button>
             </form>
 
             <div class="switch-text">Вже маєте акаунт? <a th:href="@{/login}">Увійти</a></div>
         </div>
     </div>
 </main>
+
+<script>
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const msg = document.getElementById('match-msg');
+    const btn = document.getElementById('submitBtn');
+
+    function checkMatch() {
+        if (confirmPassword.value === "") {
+            msg.style.display = 'none';
+            btn.disabled = false;
+            return;
+        }
+
+        msg.style.display = 'block';
+        if (password.value === confirmPassword.value) {
+            msg.textContent = "✓ Паролі збігаються";
+            msg.style.color = "#27ae60";
+            btn.disabled = false;
+        } else {
+            msg.textContent = "✕ Паролі не збігаються";
+            msg.style.color = "#e74c3c";
+            btn.disabled = true;
+        }
+    }
+
+    password.addEventListener('input', checkMatch);
+    confirmPassword.addEventListener('input', checkMatch);
+
+    function togglePassword(id, icon) {
+        const field = document.getElementById(id);
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
 
 </body>
 </html>
