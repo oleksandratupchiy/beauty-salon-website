@@ -1,18 +1,21 @@
-# Dunya Beauty Web App
+# Beauty Salon Management System
 
-A web application for beauty salon management and appointment booking. Built as a university laboratory project to practice Spring Boot, MVC architecture, and secure user authentication.
+A full-stack web application designed for beauty salon management. This project streamlines the process of booking appointments, managing services, and handling client reviews.
 
 ## Features
-
-* **Secure Authentication:** Implements user registration, login, and password recovery. Uses Spring Security for route protection, BCrypt for password hashing, and UUID tokens for email verification.
-* **Role-Based Access Control (RBAC):** Restricts access to sensitive endpoints based on user roles (`ROLE_USER`, `ROLE_ADMIN`).
-* **Appointment Management:** Clients can browse available services, view master profiles, and book appointments.
-* **Admin Dashboard:** Provides an administrative interface to manage services, staff, and view analytical data regarding salon performance.
-* **Data Export/Import:** Supports exporting financial reports and client data to Excel (`.xlsx`) format using the Apache POI library.
-* **Email Integration:** Uses `JavaMailSender` to deliver transactional emails (account activation, password reset links).
+* **Secure Authentication:** User login and registration using Spring Security and BCrypt password hashing.
+* **Role-Based Access:** Distinct functionality for admins, masters, and clients.
+* **Database Management:** Normalized relational database schema in PostgreSQL to manage users, appointments, services, and reviews.
+* **MVC Architecture:** Clean separation of concerns for maintainable and scalable code.
 
 ## Tech Stack
-
-* **Backend:** Java 21, Spring Boot 3.4, Spring Security, Spring Data JPA
+* **Backend:** Java, Spring Boot, Spring Security
 * **Database:** PostgreSQL
-* **Frontend:** HTML5, CSS3, JavaScript, Thymeleaf
+* **Build Tool:** Maven
+
+## Getting Started
+1. Clone the repository: 
+   `git clone https://github.com/oleksandratupchiy/beauty-salon-website.git`
+2. Configure your PostgreSQL database credentials in `src/main/resources/application.properties`.
+3. Build and run the application using Maven: 
+   `mvn spring-boot:run`
